@@ -14,8 +14,21 @@ namespace Mini_Compiler.Sintactico
 
         public Syntactic(Lexer.Lexer lexer)
         {
-            lexer
+            this.lexer = lexer;
         }
 
+        public void Parse()
+        {
+            BeginProgram();
+            if (currentToken.Type != TokenTypes.Eof)
+            {
+                throw new SyntaxException("Se esperaba EOF");
+            }
+        }
+
+        private void BeginProgram()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
