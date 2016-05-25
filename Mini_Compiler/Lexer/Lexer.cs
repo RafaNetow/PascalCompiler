@@ -10,7 +10,8 @@ namespace Mini_Compiler.Lexer
     public class Lexer
     {
         public StringContent Content;
-        private Symbol currentSymbol;
+        private Symbol _currentSymbol;
+        private bool _pascalMode;
         private ReserverdWords rw = new ReserverdWords();
 
         public bool OnlyHexInString(string test)
@@ -21,7 +22,8 @@ namespace Mini_Compiler.Lexer
         public Lexer(StringContent content)
         {
             Content = content;
-            currentSymbol = content.nextSymbol();
+            _pascalMode = false;
+            _currentSymbol = content.nextSymbol();
             
         }
 
@@ -33,117 +35,215 @@ namespace Mini_Compiler.Lexer
             int tokenRow = 0;
             int tokenColumn = 0;
 
+            if (_pascalMode)
+                state = 0;
+
             while (true)
             {
                 switch (state)
                 {
+
+                    //consume html o verficia si va a venir algo perecido a un html
+                    case 100:
+
+                        if (_currentSymbol.CurrentSymbol == '\0')
+                        {
+                            state = 6;
+                        }
+                    
+                          else if (_currentSymbol.CurrentSymbol == '<')
+                        {
+                        //    this->lexemaA = token.Lexema;
+                            lexeme += _currentSymbol.CurrentSymbol;
+                            _currentSymbol = Content.nextSymbol();
+                            state = 22;
+                        }
+                        lexeme += _currentSymbol.CurrentSymbol;
+                        _currentSymbol = Content.nextSymbol();
+                        state = 33;
+                        break;
+                    case 200:
+
+                        if (_currentSymbol.CurrentSymbol == '%')
+                        {
+                            //  token.Lexema = lexemaAnterior;
+                            this._pascalMode = true;
+                            tokenColumn = _currentSymbol.Column;
+                            tokenRow = _currentSymbol.Row;
+                            lexeme += _currentSymbol.CurrentSymbol;
+                            _currentSymbol = Content.nextSymbol();
+
+                            return new Token
+                            {
+                                Type = TokenTypes.Html,
+                                Column = tokenColumn,
+                                Row = tokenRow,
+                                Lexeme = lexeme
+
+
+                            };
+
+                        }
+                        else if (_currentSymbol.CurrentSymbol == '\0')
+                        {
+                            state = 6;
+                            return new Token {Row = tokenRow,Column = tokenColumn,Lexeme = lexeme, Type = TokenTypes.Html};
+  
+                        }
+                        else
+                        {
+                            tokenColumn = _currentSymbol.Column;
+                            tokenRow = _currentSymbol.Row; 
+                            lexeme +=_currentSymbol.CurrentSymbol;
+                            _currentSymbol = Content.nextSymbol();                                       
+                            state = 300;
+                        }
+                        break;
+                    case 300:
+                        if (_currentSymbol.CurrentSymbol == '<')
+                        {
+                            tokenColumn = _currentSymbol.Column;
+                            tokenRow = _currentSymbol.Row;
+                            lexeme += _currentSymbol.CurrentSymbol;
+                            _currentSymbol = Content.nextSymbol();
+                            state = 200;
+                        }
+                        else if (_currentSymbol.CurrentSymbol == '\0')
+                        {
+                            state = 6;
+
+                            return new Token
+                            {
+                                Column = tokenColumn,
+                                Row = tokenRow,
+                                Lexeme = lexeme,
+                                Type = TokenTypes.Html
+                            };
+                        }
+                        else
+                        {
+                           lexeme += _currentSymbol.CurrentSymbol;
+                            _currentSymbol = Content.nextSymbol();
+                        }
+                        break;
+
+
+
                     case 0:
-                         if (char.IsWhiteSpace(currentSymbol.CurrentSymbol))
+                         if (char.IsWhiteSpace(_currentSymbol.CurrentSymbol))
                         {
                             state = 0;
-                            currentSymbol = Content.nextSymbol();
+                            _currentSymbol = Content.nextSymbol();
                         }
-                        else if (char.IsLetter(currentSymbol.CurrentSymbol))
+                        else if (char.IsLetter(_currentSymbol.CurrentSymbol))
                         {
                             state = 1;
-                            tokenColumn = currentSymbol.Column;
-                            tokenRow = currentSymbol.Row;
-                            lexeme += currentSymbol.CurrentSymbol;
-                            currentSymbol = Content.nextSymbol();
+                            tokenColumn = _currentSymbol.Column;
+                            tokenRow = _currentSymbol.Row;
+                            lexeme += _currentSymbol.CurrentSymbol;
+                            _currentSymbol = Content.nextSymbol();
                         }
-                        else if (char.IsDigit(currentSymbol.CurrentSymbol))
+                        else if (char.IsDigit(_currentSymbol.CurrentSymbol))
                         {
                             state = 2;
-                            tokenColumn = currentSymbol.Column;
-                            tokenRow = currentSymbol.Row;
-                            lexeme += currentSymbol.CurrentSymbol;
-                            currentSymbol = Content.nextSymbol();
+                            tokenColumn = _currentSymbol.Column;
+                            tokenRow = _currentSymbol.Row;
+                            lexeme += _currentSymbol.CurrentSymbol;
+                            _currentSymbol = Content.nextSymbol();
                         }
-                          else if (currentSymbol.CurrentSymbol == '\"')
+                          else if (_currentSymbol.CurrentSymbol == '\"')
                         {
                             state = 3;
-                            tokenColumn = currentSymbol.Column;
-                            tokenRow = currentSymbol.Row;
-                            lexeme += currentSymbol.CurrentSymbol;
-                            currentSymbol = Content.nextSymbol();
+                            tokenColumn = _currentSymbol.Column;
+                            tokenRow = _currentSymbol.Row;
+                            lexeme += _currentSymbol.CurrentSymbol;
+                            _currentSymbol = Content.nextSymbol();
                         }
-                        else if (currentSymbol.CurrentSymbol == ':')
+                        else if (_currentSymbol.CurrentSymbol == ':')
                         {
                             state = 4;
-                            tokenColumn = currentSymbol.Column;
-                            tokenRow = currentSymbol.Row;
-                            lexeme += currentSymbol.CurrentSymbol;
-                            currentSymbol = Content.nextSymbol();
+                            tokenColumn = _currentSymbol.Column;
+                            tokenRow = _currentSymbol.Row;
+                            lexeme += _currentSymbol.CurrentSymbol;
+                            _currentSymbol = Content.nextSymbol();
                         }
-                        else if (rw.operators.ContainsKey(currentSymbol.CurrentSymbol.ToString()))
+                        else if (rw.operators.ContainsKey(_currentSymbol.CurrentSymbol.ToString()))
                         {
 
                             state = 5;
-                            tokenColumn = currentSymbol.Column;
-                            tokenRow = currentSymbol.Row;
-                            lexeme += currentSymbol.CurrentSymbol;
-                            currentSymbol = Content.nextSymbol();
+                            tokenColumn = _currentSymbol.Column;
+                            tokenRow = _currentSymbol.Row;
+                            lexeme += _currentSymbol.CurrentSymbol;
+                            _currentSymbol = Content.nextSymbol();
 
                         }
 
-                        else if (currentSymbol.CurrentSymbol == '\0')
+                        else if (_currentSymbol.CurrentSymbol == '\0')
                         {
                             state = 6;
-                            tokenColumn = currentSymbol.Column;
-                            tokenRow = currentSymbol.Row;
+                            tokenColumn = _currentSymbol.Column;
+                            tokenRow = _currentSymbol.Row;
                             lexeme = "$";
                         }
                       
-                       else if (currentSymbol.CurrentSymbol == '$')
+                       else if (_currentSymbol.CurrentSymbol == '$')
                         {
                             state = 7;
-                            tokenColumn = currentSymbol.Column;
-                            tokenRow = currentSymbol.Row;
-                            lexeme += currentSymbol.CurrentSymbol;
-                            currentSymbol = Content.nextSymbol();
+                            tokenColumn = _currentSymbol.Column;
+                            tokenRow = _currentSymbol.Row;
+                            lexeme += _currentSymbol.CurrentSymbol;
+                            _currentSymbol = Content.nextSymbol();
 
                         }
-                        else if (currentSymbol.CurrentSymbol == '%')
+                        else if (_currentSymbol.CurrentSymbol == '%')
                         {
                             state = 8;
-                            tokenColumn = currentSymbol.Column;
-                            tokenRow = currentSymbol.Row;
-                            lexeme += currentSymbol.CurrentSymbol;
-                            currentSymbol = Content.nextSymbol();
+                            tokenColumn = _currentSymbol.Column;
+                            tokenRow = _currentSymbol.Row;
+                            lexeme += _currentSymbol.CurrentSymbol;
+                            _currentSymbol = Content.nextSymbol();
                         }
-                        else if(currentSymbol.CurrentSymbol == '#')
+                        else if(_currentSymbol.CurrentSymbol == '#')
                         {
                             state = 10;
-                            tokenColumn = currentSymbol.Column;
-                            tokenRow = currentSymbol.Row;
-                            lexeme += currentSymbol.CurrentSymbol;
-                            currentSymbol = Content.nextSymbol();
+                            tokenColumn = _currentSymbol.Column;
+                            tokenRow = _currentSymbol.Row;
+                            lexeme += _currentSymbol.CurrentSymbol;
+                            _currentSymbol = Content.nextSymbol();
                         } 
-                        else if (currentSymbol.CurrentSymbol == '{')
+                        else if (_currentSymbol.CurrentSymbol == '{')
                         {
                             state = 11;
-                            tokenColumn = currentSymbol.Column;
-                            tokenRow = currentSymbol.Row;
-                            currentSymbol = Content.nextSymbol();
+                            tokenColumn = _currentSymbol.Column;
+                            tokenRow = _currentSymbol.Row;
+                            _currentSymbol = Content.nextSymbol();
                         } 
-                        else if (currentSymbol.CurrentSymbol == '/')
+                        else if (_currentSymbol.CurrentSymbol == '/')
                         {
                             state = 12;
-                            tokenColumn = currentSymbol.Column;
-                            tokenRow = currentSymbol.Row;
+                            tokenColumn = _currentSymbol.Column;
+                            tokenRow = _currentSymbol.Row;
+                        }
+                        else if (_currentSymbol.CurrentSymbol == '%')
+                        {
+                            state = 14;
+                            tokenColumn = _currentSymbol.Column;
+                            tokenRow = _currentSymbol.Row;
+                            _currentSymbol = Content.nextSymbol();
+
                         }                 
                         
                         else
                         {
-                            throw new LexicalException($"Symbol {currentSymbol.CurrentSymbol} not recognized at Row:{currentSymbol.Row} Col: {currentSymbol.Column}");
+                            throw new LexicalException($"Symbol {_currentSymbol.CurrentSymbol} not recognized at Row:{_currentSymbol.Row} Col: {_currentSymbol.Column}");
                         }
                         break;
                     case 1:
-                        if (char.IsLetterOrDigit(currentSymbol.CurrentSymbol))
+                        if (char.IsLetterOrDigit(_currentSymbol.CurrentSymbol))
                         {
                             state = 1;
-                            lexeme += currentSymbol.CurrentSymbol;
-                            currentSymbol = Content.nextSymbol();
+                            lexeme += _currentSymbol.CurrentSymbol;
+                            _currentSymbol = Content.nextSymbol();
                         }
                         else if (rw.reserverdWords.ContainsKey(lexeme))
                         {
@@ -164,17 +264,17 @@ namespace Mini_Compiler.Lexer
                         }
                         break;
                     case 2:
-                        if (char.IsDigit(currentSymbol.CurrentSymbol))
+                        if (char.IsDigit(_currentSymbol.CurrentSymbol))
                         {
                             state = 2;
-                            lexeme += currentSymbol.CurrentSymbol;
-                            currentSymbol = Content.nextSymbol();
+                            lexeme += _currentSymbol.CurrentSymbol;
+                            _currentSymbol = Content.nextSymbol();
                         }
-                        else if (currentSymbol.CurrentSymbol == '.')
+                        else if (_currentSymbol.CurrentSymbol == '.')
                         {
                             state = 9;
-                            lexeme += currentSymbol.CurrentSymbol;
-                            currentSymbol = Content.nextSymbol();
+                            lexeme += _currentSymbol.CurrentSymbol;
+                            _currentSymbol = Content.nextSymbol();
                         }
                         else
                         {
@@ -182,25 +282,25 @@ namespace Mini_Compiler.Lexer
                         }
                         break;
                     case 3:
-                        if (currentSymbol.CurrentSymbol != '\"')
+                        if (_currentSymbol.CurrentSymbol != '\"')
                         {
-                            lexeme += currentSymbol.CurrentSymbol;
-                            currentSymbol = Content.nextSymbol();
+                            lexeme += _currentSymbol.CurrentSymbol;
+                            _currentSymbol = Content.nextSymbol();
                         }
-                        else if (currentSymbol.CurrentSymbol == '\"')
+                        else if (_currentSymbol.CurrentSymbol == '\"')
                         {
-                            lexeme += currentSymbol.CurrentSymbol;
-                            currentSymbol = Content.nextSymbol();
+                            lexeme += _currentSymbol.CurrentSymbol;
+                            _currentSymbol = Content.nextSymbol();
                             return new Token { Type = TokenTypes.StringLiteral, Lexeme = lexeme, Column = tokenColumn, Row = tokenRow };
                         }
                         break;
                     case 4:
 
                        
-                        if (currentSymbol.CurrentSymbol == '=')
+                        if (_currentSymbol.CurrentSymbol == '=')
                         {
-                            lexeme += currentSymbol.CurrentSymbol;
-                            currentSymbol = Content.nextSymbol();
+                            lexeme += _currentSymbol.CurrentSymbol;
+                            _currentSymbol = Content.nextSymbol();
                             return new Token
                             {
                                 Type = rw.operators[lexeme],
@@ -211,17 +311,22 @@ namespace Mini_Compiler.Lexer
                         }
                         else
                         {
-                            throw new LexicalException(
-                                $"Symbol {currentSymbol.CurrentSymbol} not recognized at Row:{currentSymbol.Row} Col: {currentSymbol.Column}");
+                            return new Token
+                            {
+                                Type = TokenTypes.AsiggnationOp,
+                                 Lexeme =  lexeme,
+                                 Column = tokenColumn,
+                                 Row = tokenColumn
+                             
+                            };
                         }
                  
 
-                        break;
                     case 5:
-                        if ( rw.specialSymbols.Contains(currentSymbol.CurrentSymbol))
+                        if ( rw.specialSymbols.Contains(_currentSymbol.CurrentSymbol))
                         {
-                            lexeme += currentSymbol.CurrentSymbol;
-                            currentSymbol = Content.nextSymbol();
+                            lexeme += _currentSymbol.CurrentSymbol;
+                            _currentSymbol = Content.nextSymbol();
                             return new Token
                             {
                                 Type = rw.operators[lexeme],
@@ -240,15 +345,15 @@ namespace Mini_Compiler.Lexer
                                 Row = tokenRow
                             };
                         }          
-                        break;
+                        
                     case 6:
                         return new Token { Type = TokenTypes.Eof, Lexeme = lexeme, Column = tokenColumn, Row = tokenRow };
 
                     case 7:
-                        if (OnlyHexInString(currentSymbol.CurrentSymbol.ToString()))
+                        if (OnlyHexInString(_currentSymbol.CurrentSymbol.ToString()))
                         {
-                            lexeme += currentSymbol.CurrentSymbol;
-                            currentSymbol = Content.nextSymbol();
+                            lexeme += _currentSymbol.CurrentSymbol;
+                            _currentSymbol = Content.nextSymbol();
                         }
                         else
                         {
@@ -257,10 +362,10 @@ namespace Mini_Compiler.Lexer
                         }
                         break;
                     case 8:
-                        if (currentSymbol.CurrentSymbol == '1' || currentSymbol.CurrentSymbol == '0')
+                        if (_currentSymbol.CurrentSymbol == '1' || _currentSymbol.CurrentSymbol == '0')
                         {
-                            lexeme += currentSymbol.CurrentSymbol;
-                            currentSymbol = Content.nextSymbol();
+                            lexeme += _currentSymbol.CurrentSymbol;
+                            _currentSymbol = Content.nextSymbol();
                         }
                         else
                         {
@@ -270,11 +375,11 @@ namespace Mini_Compiler.Lexer
                         break;
 
                     case 9:
-                        if (char.IsDigit(currentSymbol.CurrentSymbol))
+                        if (char.IsDigit(_currentSymbol.CurrentSymbol))
                         {
                             state = 9;
-                            lexeme += currentSymbol.CurrentSymbol;
-                            currentSymbol = Content.nextSymbol();
+                            lexeme += _currentSymbol.CurrentSymbol;
+                            _currentSymbol = Content.nextSymbol();
                         }
                         else
                         {
@@ -283,10 +388,10 @@ namespace Mini_Compiler.Lexer
 
                         break;
                     case 10:
-                        if (char.IsDigit(currentSymbol.CurrentSymbol))
+                        if (char.IsDigit(_currentSymbol.CurrentSymbol))
                         {
-                            lexeme += currentSymbol.CurrentSymbol;
-                            currentSymbol = Content.nextSymbol();
+                            lexeme += _currentSymbol.CurrentSymbol;
+                            _currentSymbol = Content.nextSymbol();
                         }
                         else
                         {
@@ -300,18 +405,18 @@ namespace Mini_Compiler.Lexer
                         }
                         break;
                     case 11:
-                        if (currentSymbol.CurrentSymbol == '\0')
+                        if (_currentSymbol.CurrentSymbol == '\0')
                         {
                             state = 6;
                         }
-                        else if (currentSymbol.CurrentSymbol == '}')
+                        else if (_currentSymbol.CurrentSymbol == '}')
                         {
                             state = 0;
-                            currentSymbol = Content.nextSymbol();
+                            _currentSymbol = Content.nextSymbol();
                         }
                         else
                         {
-                            currentSymbol = Content.nextSymbol();
+                            _currentSymbol = Content.nextSymbol();
                         }
                         break;
                         
@@ -320,26 +425,26 @@ namespace Mini_Compiler.Lexer
                         if (temp.CurrentSymbol == '/')
                         {
                             state = 13;
-                            currentSymbol = Content.nextSymbol();
+                            _currentSymbol = Content.nextSymbol();
                         }
                         else
                         {
-                            currentSymbol = temp;
+                            _currentSymbol = temp;
                             return new Token { Type = TokenTypes.DivOp, Lexeme = "/", Column = tokenColumn, Row = tokenRow };
                         }
                         break;
                     case 13:
 
-                         if (currentSymbol.CurrentSymbol == '\0')
+                         if (_currentSymbol.CurrentSymbol == '\0')
                         {
                             state = 6;
-                            tokenColumn = currentSymbol.Column;
-                            tokenRow = currentSymbol.Row;
+                            tokenColumn = _currentSymbol.Column;
+                            tokenRow = _currentSymbol.Row;
                             lexeme = "$";
                         }
-                        else if (tokenRow == currentSymbol.Row)
+                        else if (tokenRow == _currentSymbol.Row)
                         {
-                            currentSymbol = Content.nextSymbol();
+                            _currentSymbol = Content.nextSymbol();
                         }
                         else
                         {
@@ -347,8 +452,19 @@ namespace Mini_Compiler.Lexer
                            
                         }
                         break;
+                    case 14:
+                        if (_currentSymbol.CurrentSymbol == '>')
+                        {
+                            _currentSymbol = Content.nextSymbol();
+                            state = 0;
+                            _pascalMode = false;
+                        }
+                        else
+                        {
+                            throw new LexicalException("No se ha cerrado codigo pascal");
+                        }
 
-                            default:
+                    
                         break;
                 }
             }

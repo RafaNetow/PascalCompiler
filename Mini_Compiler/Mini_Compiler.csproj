@@ -57,6 +57,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SampleParser.cs" />
     <Compile Include="SampleParserBinaryToFloat.cs" />
+    <Compile Include="Sintactico\BinaryOperatorNode.cs" />
     <Compile Include="Sintactico\Syntactic.cs" />
   </ItemGroup>
   <ItemGroup>

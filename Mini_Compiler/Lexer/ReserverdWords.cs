@@ -45,6 +45,7 @@ namespace Mini_Compiler.Lexer
             operators.Add("[",TokenTypes.OpenBracketOperator);
             operators.Add("]",TokenTypes.CloseBracketOperator);
             operators.Add(",",TokenTypes.CommaOperator);
+            operators.Add(":",TokenTypes.Declaretion);
         }
 
         public void InitSpecialOperator()
@@ -90,7 +91,6 @@ namespace Mini_Compiler.Lexer
             reserverdWords.Add("function",TokenTypes.RwFunction);
             reserverdWords.Add("procedure",TokenTypes.RwProcedure);
             reserverdWords.Add("if", TokenTypes.RwIf);
-            reserverdWords.Add("string", TokenTypes.RwString);
             reserverdWords.Add("case",TokenTypes.RwCase);
             reserverdWords.Add("until",TokenTypes.RwUntil);
             reserverdWords.Add("while",TokenTypes.RwWhile);

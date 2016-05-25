@@ -66,7 +66,7 @@ Scenario: Input is an id a2042
 	When We Tokenize
 	Then the result should be 
 		| Type		| Lexeme   | Column | Row |
-		| RwInteger	| integer  |   0    | 0   |
+		| Id	| integer  |   0    | 0   |
 		| Eof	    |   $	   |   7    | 0  |
 
  Scenario: Input is an Hexadecimal opertaorSum and Id
@@ -143,7 +143,7 @@ Scenario: Input is many reserved words
         | RwFor     | for     |   3    | 0   |
         | RwWhile   | while   |   7    | 0   |
         | RwAnd     | and     |   13   | 0   |
-        | RwInteger     | integer |   17   | 0   |
+        | Id     | integer |   17   | 0   |
         | Eof       | $       |   24   | 0   |
 
 Scenario: Input is a char literal
@@ -155,7 +155,7 @@ Scenario: Input is a char literal
         | CommaOperator      | ,       |   4    | 0   |
         | Id                 | age     |   6   | 0   |
         | EqualOp            | =       |   10    | 0   |
-        | RwInteger          | integer |   12    | 0   |
+        | Id          | integer |   12    | 0   |
         | Eos                | ;       |   19   | 0   |
         | Eof                | $       |   20    | 0   |
 Scenario: Input is a charPound

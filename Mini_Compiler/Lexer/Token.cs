@@ -69,7 +69,14 @@
         CloseBracketOperator,
         CommaOperator,
         CharPound,
-        GreaterOp
+        GreaterOp,
+        RwType,
+        RwTo,
+        RwOf,
+        RwVar,
+        RwRepeat,
+        Html,
+        Declaretion
     }
 
     public class Token

@@ -332,7 +332,7 @@ this.ScenarioSetup(scenarioInfo);
                         "Column",
                         "Row"});
             table8.AddRow(new string[] {
-                        "RwInteger",
+                        "Id",
                         "integer",
                         "0",
                         "0"});
@@ -685,7 +685,7 @@ this.ScenarioSetup(scenarioInfo);
                         "13",
                         "0"});
             table15.AddRow(new string[] {
-                        "RwInteger",
+                        "Id",
                         "integer",
                         "17",
                         "0"});
@@ -739,7 +739,7 @@ this.ScenarioSetup(scenarioInfo);
                         "10",
                         "0"});
             table16.AddRow(new string[] {
-                        "RwInteger",
+                        "Id",
                         "integer",
                         "12",
                         "0"});
