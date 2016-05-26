@@ -376,11 +376,13 @@ namespace Mini_Compiler.Lexer
                             lexeme += _currentSymbol.CurrentSymbol;
                             _currentSymbol = Content.nextSymbol();
                         }
-                        else
+                        else if (_currentSymbol.CurrentSymbol == '>')
                         {
-
-                            return new Token { Type = TokenTypes.Binary, Lexeme = lexeme, Column = tokenColumn, Row = tokenRow };
+                            state = 100;
                         }
+                        else
+                            return new Token { Type = TokenTypes.Binary, Lexeme = lexeme, Column = tokenColumn, Row = tokenRow };
+                        
                         break;
 
                     case 9:

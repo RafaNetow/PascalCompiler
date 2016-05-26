@@ -6,6 +6,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.InteropServices;
 using System.Runtime.Remoting.Channels;
+using System.Runtime.Versioning;
 using System.Text;
 using System.Threading.Tasks;
 using Mini_Compiler.Lexer;
@@ -44,19 +45,173 @@ namespace Mini_Compiler.Sintactico
 
         private void ListSentence()
         {
-            if (currentToken.Type == TokenTypes.Html)
+            if (CompareTokenType(TokenTypes.Html))
             {         
                 ConsumeNextToken();
                 ListSentence();       
               
             }        
-          else  if (currentToken.Type == TokenTypes.RwVar)
+        else  if (CompareTokenType(TokenTypes.RwVar))
             {
                 Declaration();
             }
+        else if (CompareTokenType(TokenTypes.RwIf))
+         {
+            IfPascal();
+         }
+        else if (CompareTokenType(TokenTypes.RwWhile))
+        {
+            While();
+        }
+        else if(CompareTokenType(TokenTypes.RwRepeat))
+        {
+            Repeat();
+        }
+        else if (CompareTokenType(TokenTypes.RwCase))
+        {
+            Case();
+        }
           
        
           
+        }
+
+        private void Case()
+        {
+            
+            ConsumeNextToken();
+            if (CompareTokenType(TokenTypes.Id))
+            {
+                ConsumeNextToken();
+                if (CompareTokenType(TokenTypes.RwOf))
+                {
+                    CaseList();
+                }
+            }
+           
+        }
+
+        private void CaseList()
+        {
+
+            if (CompareTokenType(TokenTypes.RwElse)) 
+                {
+                  Else();  
+                } 
+            CaseLiteral();
+        }
+
+        private void CaseLiteral()
+        {
+            ConsumeNextToken();
+            if (CompareTokenType(TokenTypes.NumericLiteral))
+            {
+                ListNum();
+            }
+          
+        }
+
+        private void ListNum()
+        {
+            ConsumeNextToken();
+            if (CompareTokenType(TokenTypes.CommaOperator))
+            {
+                NumOptional();
+            }
+
+        }
+
+        private void NumOptional()
+        {
+            
+
+        }
+
+        private void Repeat()
+        {
+            LS_LOOP();
+        }
+
+        private void LS_LOOP()
+        {
+            
+            LoopS();
+            ConsumeNextToken();
+            if (CompareTokenType(TokenTypes.Eos))
+            {
+                return;
+            }
+            else
+            {
+                LoopS();
+            }
+        }
+
+        private void While()
+        {
+            E();
+            ConsumeNextToken();
+            if (CompareTokenType(TokenTypes.RwDo))
+            {
+                LoopS();
+            }
+
+        }
+
+        private void LoopS()
+        {
+            if (CompareTokenType(TokenTypes.RwContinnue))
+            {
+                return;
+            }
+            if (CompareTokenType(TokenTypes.RwWhile))
+            {
+                return;
+            }
+            else
+            {
+                ListSentence();
+            }
+
+        }
+
+        private void IfPascal()
+        {
+            E();
+            if (currentToken.Type == TokenTypes.RwThen)
+            {
+
+                Block();
+                ConsumeNextToken();
+                if (CompareTokenType(TokenTypes.Eos))
+                    return;
+                if (CompareTokenType(TokenTypes.RwElse))
+                {
+                    Else();
+                }
+               
+                throw  new SyntaxException("Expected  EOS");
+            }
+        }
+
+        private void Else()
+        {
+            Block();
+        }
+
+        private void Block()
+        {
+            ConsumeNextToken();
+            if (CompareTokenType(TokenTypes.RwBegin))
+            {
+                Parse();
+                if (CompareTokenType(TokenTypes.RwEnd))
+                {
+                    return;
+                }
+
+            }
+            ListSentence();
         }
 
         private void Declaration()
@@ -106,6 +261,7 @@ namespace Mini_Compiler.Sintactico
                     {
                         return;
                     }
+                   
                     else
                     {
                         throw  new SyntaticException("Expected Id", currentToken.Row, currentToken.Column);
@@ -114,6 +270,11 @@ namespace Mini_Compiler.Sintactico
                 else if (currentToken.Type == TokenTypes.Eof)
                 {
                     return;
+                }
+                else if (currentToken.Type == TokenTypes.Html)
+                {
+                    ConsumeNextToken();
+                    ListSentence();
                 }
                 else
                 {

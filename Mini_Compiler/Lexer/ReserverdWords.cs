@@ -75,6 +75,8 @@ namespace Mini_Compiler.Lexer
             specialReservedWords.Add("writeln", TokenTypes.RwWriteLn);
             specialReservedWords.Add("read", TokenTypes.RwRead);
             specialReservedWords.Add("readln", TokenTypes.RwReadln);
+            specialReservedWords.Add("continue",TokenTypes.RwContinue);
+            specialReservedWords.Add("break",TokenTypes.RwBreak);
 
         }
         public void InitReservdWords()
