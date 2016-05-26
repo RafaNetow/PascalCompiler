@@ -47,6 +47,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Handlers\HandlerFiles.cs" />
     <Compile Include="Lexer\Lexer.cs" />
     <Compile Include="Lexer\LexicalException.cs" />
     <Compile Include="Lexer\ReserverdWords.cs" />

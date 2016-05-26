@@ -30,8 +30,9 @@ namespace Mini_Compiler.Lexer
         
         public Token GetNextToken()
         {
-            int state = 0;
+            int state = 100;
             string lexeme = "";
+            int eof = 0;
             int tokenRow = 0;
             int tokenColumn = 0;
 
@@ -48,19 +49,22 @@ namespace Mini_Compiler.Lexer
 
                         if (_currentSymbol.CurrentSymbol == '\0')
                         {
-                            state = 6;
+                            state = 600;
                         }
                     
                           else if (_currentSymbol.CurrentSymbol == '<')
-                        {
-                        //    this->lexemaA = token.Lexema;
-                            lexeme += _currentSymbol.CurrentSymbol;
-                            _currentSymbol = Content.nextSymbol();
-                            state = 22;
-                        }
-                        lexeme += _currentSymbol.CurrentSymbol;
-                        _currentSymbol = Content.nextSymbol();
-                        state = 33;
+                          {
+                              //    this->lexemaA = token.Lexema;
+                              lexeme += _currentSymbol.CurrentSymbol;
+                              _currentSymbol = Content.nextSymbol();
+                              state = 200;
+                          }
+                          else
+                          {
+                              lexeme += _currentSymbol.CurrentSymbol;
+                              _currentSymbol = Content.nextSymbol();
+                              state = 100;
+                          }
                         break;
                     case 200:
 
@@ -87,6 +91,7 @@ namespace Mini_Compiler.Lexer
                         else if (_currentSymbol.CurrentSymbol == '\0')
                         {
                             state = 6;
+                      
                             return new Token {Row = tokenRow,Column = tokenColumn,Lexeme = lexeme, Type = TokenTypes.Html};
   
                         }
@@ -348,6 +353,10 @@ namespace Mini_Compiler.Lexer
                         
                     case 6:
                         return new Token { Type = TokenTypes.Eof, Lexeme = lexeme, Column = tokenColumn, Row = tokenRow };
+                    case 600:
+
+                        _pascalMode = true;
+                        return new Token { Type = TokenTypes.Html, Lexeme = lexeme, Column = tokenColumn, Row = tokenRow };
 
                     case 7:
                         if (OnlyHexInString(_currentSymbol.CurrentSymbol.ToString()))

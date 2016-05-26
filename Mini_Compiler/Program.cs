@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Mini_Compiler.Handlers;
 using Mini_Compiler.Lexer;
 using Mini_Compiler.Sintactico;
 
@@ -12,11 +13,19 @@ namespace Mini_Compiler
     {
         static void Main(string[] args)
         {
+
+          
+            HandlerFiles handlFile = new HandlerFiles();
+            string pascalCode = handlFile.getCode();
             //Declaraciones
-            Syntactic parser = new Syntactic(new Lexer.Lexer(new StringContent(" var a, b : id = 5++5 ")));
+
+
+
+            Syntactic parser = new Syntactic(new Lexer.Lexer(new StringContent(pascalCode)));
             parser.Parse();
             Console.ReadKey();
             Console.WriteLine("");
         }
+
     }
 }
