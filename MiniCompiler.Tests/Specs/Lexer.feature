@@ -146,7 +146,7 @@ Scenario: Input is many reserved words
         | Id     | integer |   17   | 0   |
         | Eof       | $       |   24   | 0   |
 
-Scenario: Input is a char literal
+Scenario: Input is a  literals
     Given I have an input of 'days, age = integer;'
     When We Tokenize
     Then the result should be
@@ -158,13 +158,25 @@ Scenario: Input is a char literal
         | Id          | integer |   12    | 0   |
         | Eos                | ;       |   19   | 0   |
         | Eof                | $       |   20    | 0   |
+
+Scenario: Input is a char literal
+    Given I have an input of '<%'a'%>'
+    When We Tokenize
+    Then the result should be
+        | Type               | Lexeme  | Column | Row |
+        |  Html    | <%    |          1  |  0  |
+	    |  char_literal    | 'a'     |   2    | 0   |
+		|  Html    | %>    |       5  |  0  |
+        | Eof          | $       |   0    | 0   |
 Scenario: Input is a charPound
-    Given I have an input of '#64'
+    Given I have an input of '<% #64 %>'
     When We Tokenize
     Then the result should be
         | Type         | Lexeme  | Column | Row |
-        | CharPound    | #64     |   0    | 0   |
-        | Eof          | $       |   3    | 0   |
+        |  Html    | <%    |          1  |  0  |
+	    | CharPound    | #64     |   3    | 3   |
+		|  Html    | %>    |       7  |  0  |
+        | Eof          | $       |   0    | 0   |
 Scenario: Input is logical operators
     Given I have an input of '< <= <> >= > ='
     When We Tokenize

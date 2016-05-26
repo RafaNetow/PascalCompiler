@@ -49,7 +49,13 @@ namespace Mini_Compiler.Lexer
 
                         if (_currentSymbol.CurrentSymbol == '\0')
                         {
-                            state = 600;
+                            return new Token
+                            {
+                                Type = TokenTypes.Eof,
+                                Column = tokenColumn,
+                                Row = tokenRow,
+                                Lexeme = "$"
+                            };
                         }
                     
                           else if (_currentSymbol.CurrentSymbol == '<')
@@ -236,8 +242,24 @@ namespace Mini_Compiler.Lexer
                             tokenRow = _currentSymbol.Row;
                             _currentSymbol = Content.nextSymbol();
 
-                        }                 
-                        
+                        }
+                        else if (_currentSymbol.CurrentSymbol == '\"')
+                        {
+                            state = 3;
+                            tokenColumn = _currentSymbol.Column;
+                            tokenRow = _currentSymbol.Row;
+                            lexeme += _currentSymbol.CurrentSymbol;
+                            _currentSymbol = Content.nextSymbol();
+                        }
+                        else if (_currentSymbol.CurrentSymbol == '\'')
+                        {
+                            state = 14;
+                            tokenColumn = _currentSymbol.Column;
+                            tokenRow = _currentSymbol.Row;
+                            lexeme += _currentSymbol.CurrentSymbol;
+                            _currentSymbol = Content.nextSymbol();
+                        }
+
                         else
                         {
                             throw new LexicalException($"Symbol {_currentSymbol.CurrentSymbol} not recognized at Row:{_currentSymbol.Row} Col: {_currentSymbol.Column}");
@@ -355,7 +377,7 @@ namespace Mini_Compiler.Lexer
                         return new Token { Type = TokenTypes.Eof, Lexeme = lexeme, Column = tokenColumn, Row = tokenRow };
                     case 600:
 
-                        _pascalMode = true;
+                       
                         return new Token { Type = TokenTypes.Html, Lexeme = lexeme, Column = tokenColumn, Row = tokenRow };
 
                     case 7:
@@ -378,7 +400,16 @@ namespace Mini_Compiler.Lexer
                         }
                         else if (_currentSymbol.CurrentSymbol == '>')
                         {
-                            state = 100;
+                            lexeme += _currentSymbol.CurrentSymbol;
+                            _currentSymbol = Content.nextSymbol();
+                            _pascalMode = false;
+                            return new Token
+                            {
+                                Type = TokenTypes.Html,
+                                Lexeme = lexeme,
+                                Column = tokenColumn,
+                                Row = tokenRow
+                            };
                         }
                         else
                             return new Token { Type = TokenTypes.Binary, Lexeme = lexeme, Column = tokenColumn, Row = tokenRow };
@@ -464,19 +495,26 @@ namespace Mini_Compiler.Lexer
                         }
                         break;
                     case 14:
-                        if (_currentSymbol.CurrentSymbol == '>')
+                   
+                        if (_currentSymbol.CurrentSymbol == '\'')
+                             throw  new LexicalException("expected Id");
+                        lexeme += _currentSymbol.CurrentSymbol;
+                        _currentSymbol = Content.nextSymbol();
+                        if (_currentSymbol.CurrentSymbol == '\'')
+                            lexeme += _currentSymbol.CurrentSymbol;
+                             _currentSymbol= Content.nextSymbol();
+
                         {
-                            _currentSymbol = Content.nextSymbol();
-                            state = 0;
-                            _pascalMode = false;
-                        }
-                        else
-                        {
-                            throw new LexicalException("No se ha cerrado codigo pascal");
+                            return new Token {Lexeme = lexeme,Column = tokenColumn, Row = tokenRow, Type = TokenTypes.char_literal};
                         }
 
-                    
-                        break;
+
+
+                            break;
+
+
+
+
                 }
             }
 

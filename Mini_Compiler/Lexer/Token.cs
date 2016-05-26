@@ -76,7 +76,11 @@
         RwVar,
         RwRepeat,
         Html,
-        Declaretion
+        Declaretion,
+        RwContinnue,
+        RwContinue,
+        RwBreak,
+        char_literal
     }
 
     public class Token

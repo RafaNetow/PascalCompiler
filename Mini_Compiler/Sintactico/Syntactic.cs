@@ -108,6 +108,7 @@ namespace Mini_Compiler.Sintactico
             {
                 ListNum();
             }
+          //  if(CompareTokenType())
           
         }
 
@@ -124,7 +125,15 @@ namespace Mini_Compiler.Sintactico
         private void NumOptional()
         {
             
-
+                 ConsumeNextToken();
+            if (CompareTokenType(TokenTypes.NumericLiteral))
+            {
+                ListNum();
+            }
+            else
+            {
+                throw new SyntaxException("Expected Literal");
+            }
         }
 
         private void Repeat()

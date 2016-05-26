@@ -701,11 +701,11 @@ this.ScenarioSetup(scenarioInfo);
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Input is a char literal")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Input is a  literals")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ReservedWords")]
-        public virtual void InputIsACharLiteral()
+        public virtual void InputIsALiterals()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Input is a char literal", ((string[])(null)));
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Input is a  literals", ((string[])(null)));
 #line 149
 this.ScenarioSetup(scenarioInfo);
 #line 150
@@ -760,16 +760,16 @@ this.ScenarioSetup(scenarioInfo);
         }
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Input is a charPound")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Input is a char literal")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ReservedWords")]
-        public virtual void InputIsACharPound()
+        public virtual void InputIsACharLiteral()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Input is a charPound", ((string[])(null)));
-#line 161
-this.ScenarioSetup(scenarioInfo);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Input is a char literal", ((string[])(null)));
 #line 162
-    testRunner.Given("I have an input of \'#64\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+this.ScenarioSetup(scenarioInfo);
 #line 163
+    testRunner.Given("I have an input of \'<%\'a\'%>\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 164
     testRunner.When("We Tokenize", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
             TechTalk.SpecFlow.Table table17 = new TechTalk.SpecFlow.Table(new string[] {
@@ -778,17 +778,71 @@ this.ScenarioSetup(scenarioInfo);
                         "Column",
                         "Row"});
             table17.AddRow(new string[] {
-                        "CharPound",
-                        "#64",
-                        "0",
+                        "Html",
+                        "<%",
+                        "1",
+                        "0"});
+            table17.AddRow(new string[] {
+                        "char_literal",
+                        "\'a\'",
+                        "2",
+                        "0"});
+            table17.AddRow(new string[] {
+                        "Html",
+                        "%>",
+                        "5",
                         "0"});
             table17.AddRow(new string[] {
                         "Eof",
                         "$",
-                        "3",
+                        "0",
                         "0"});
-#line 164
+#line 165
     testRunner.Then("the result should be", ((string)(null)), table17, "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Input is a charPound")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ReservedWords")]
+        public virtual void InputIsACharPound()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Input is a charPound", ((string[])(null)));
+#line 171
+this.ScenarioSetup(scenarioInfo);
+#line 172
+    testRunner.Given("I have an input of \'<% #64 %>\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 173
+    testRunner.When("We Tokenize", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+            TechTalk.SpecFlow.Table table18 = new TechTalk.SpecFlow.Table(new string[] {
+                        "Type",
+                        "Lexeme",
+                        "Column",
+                        "Row"});
+            table18.AddRow(new string[] {
+                        "Html",
+                        "<%",
+                        "1",
+                        "0"});
+            table18.AddRow(new string[] {
+                        "CharPound",
+                        "#64",
+                        "3",
+                        "3"});
+            table18.AddRow(new string[] {
+                        "Html",
+                        "%>",
+                        "7",
+                        "0"});
+            table18.AddRow(new string[] {
+                        "Eof",
+                        "$",
+                        "0",
+                        "0"});
+#line 174
+    testRunner.Then("the result should be", ((string)(null)), table18, "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -799,55 +853,55 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void InputIsLogicalOperators()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Input is logical operators", ((string[])(null)));
-#line 168
+#line 180
 this.ScenarioSetup(scenarioInfo);
-#line 169
+#line 181
     testRunner.Given("I have an input of \'< <= <> >= > =\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 170
+#line 182
     testRunner.When("We Tokenize", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-            TechTalk.SpecFlow.Table table18 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table19 = new TechTalk.SpecFlow.Table(new string[] {
                         "Type",
                         "Lexeme",
                         "Column",
                         "Row"});
-            table18.AddRow(new string[] {
+            table19.AddRow(new string[] {
                         "LessThanOp",
                         "<",
                         "0",
                         "0"});
-            table18.AddRow(new string[] {
+            table19.AddRow(new string[] {
                         "LessThanOrEqualOp",
                         "<=",
                         "2",
                         "0"});
-            table18.AddRow(new string[] {
+            table19.AddRow(new string[] {
                         "UnequalOp",
                         "<>",
                         "5",
                         "0"});
-            table18.AddRow(new string[] {
+            table19.AddRow(new string[] {
                         "GreaterThanOrEqualOp",
                         ">=",
                         "8",
                         "0"});
-            table18.AddRow(new string[] {
+            table19.AddRow(new string[] {
                         "GreaterOp",
                         ">",
                         "11",
                         "0"});
-            table18.AddRow(new string[] {
+            table19.AddRow(new string[] {
                         "EqualOp",
                         "=",
                         "13",
                         "0"});
-            table18.AddRow(new string[] {
+            table19.AddRow(new string[] {
                         "Eof",
                         "$",
                         "14",
                         "0"});
-#line 171
-    testRunner.Then("the result should be", ((string)(null)), table18, "Then ");
+#line 183
+    testRunner.Then("the result should be", ((string)(null)), table19, "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -858,50 +912,11 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void InputIsIdAndABlockComment()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Input is id and a block comment", ((string[])(null)));
-#line 181
-this.ScenarioSetup(scenarioInfo);
-#line 182
-    testRunner.Given("I have an input of \'test { comentario } test2\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 183
-    testRunner.When("We Tokenize", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
-            TechTalk.SpecFlow.Table table19 = new TechTalk.SpecFlow.Table(new string[] {
-                        "Type",
-                        "Lexeme",
-                        "Column",
-                        "Row"});
-            table19.AddRow(new string[] {
-                        "Id",
-                        "test",
-                        "0",
-                        "0"});
-            table19.AddRow(new string[] {
-                        "Id",
-                        "test2",
-                        "20",
-                        "0"});
-            table19.AddRow(new string[] {
-                        "Eof",
-                        "$",
-                        "25",
-                        "0"});
-#line 184
-    testRunner.Then("the result should be", ((string)(null)), table19, "Then ");
-#line hidden
-            this.ScenarioCleanup();
-        }
-        
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Input is id and a single line comment")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ReservedWords")]
-        public virtual void InputIsIdAndASingleLineComment()
-        {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Input is id and a single line comment", ((string[])(null)));
-#line 192
-this.ScenarioSetup(scenarioInfo);
 #line 193
-    testRunner.Given("I have an input of \'test //comentario test2\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+this.ScenarioSetup(scenarioInfo);
 #line 194
+    testRunner.Given("I have an input of \'test { comentario } test2\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 195
     testRunner.When("We Tokenize", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
             TechTalk.SpecFlow.Table table20 = new TechTalk.SpecFlow.Table(new string[] {
@@ -915,12 +930,51 @@ this.ScenarioSetup(scenarioInfo);
                         "0",
                         "0"});
             table20.AddRow(new string[] {
+                        "Id",
+                        "test2",
+                        "20",
+                        "0"});
+            table20.AddRow(new string[] {
+                        "Eof",
+                        "$",
+                        "25",
+                        "0"});
+#line 196
+    testRunner.Then("the result should be", ((string)(null)), table20, "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Input is id and a single line comment")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "ReservedWords")]
+        public virtual void InputIsIdAndASingleLineComment()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Input is id and a single line comment", ((string[])(null)));
+#line 204
+this.ScenarioSetup(scenarioInfo);
+#line 205
+    testRunner.Given("I have an input of \'test //comentario test2\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 206
+    testRunner.When("We Tokenize", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+            TechTalk.SpecFlow.Table table21 = new TechTalk.SpecFlow.Table(new string[] {
+                        "Type",
+                        "Lexeme",
+                        "Column",
+                        "Row"});
+            table21.AddRow(new string[] {
+                        "Id",
+                        "test",
+                        "0",
+                        "0"});
+            table21.AddRow(new string[] {
                         "Eof",
                         "$",
                         "23",
                         "0"});
-#line 195
-    testRunner.Then("the result should be", ((string)(null)), table20, "Then ");
+#line 207
+    testRunner.Then("the result should be", ((string)(null)), table21, "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -931,30 +985,30 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void InputIsADouble()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Input is a Double", ((string[])(null)));
-#line 200
+#line 212
  this.ScenarioSetup(scenarioInfo);
-#line 201
+#line 213
     testRunner.Given("I have an input of \'2.33\'", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 202
+#line 214
     testRunner.When("We Tokenize", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-            TechTalk.SpecFlow.Table table21 = new TechTalk.SpecFlow.Table(new string[] {
+            TechTalk.SpecFlow.Table table22 = new TechTalk.SpecFlow.Table(new string[] {
                         "Type",
                         "Lexeme",
                         "Column",
                         "Row"});
-            table21.AddRow(new string[] {
+            table22.AddRow(new string[] {
                         "NumericLiteral",
                         "2.33",
                         "0",
                         "0"});
-            table21.AddRow(new string[] {
+            table22.AddRow(new string[] {
                         "Eof",
                         "$",
                         "4",
                         "0"});
-#line 203
-    testRunner.Then("the result should be", ((string)(null)), table21, "Then ");
+#line 215
+    testRunner.Then("the result should be", ((string)(null)), table22, "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
