@@ -70,7 +70,7 @@ namespace Mini_Compiler.Lexer
             specialReservedWords.Add("xor", TokenTypes.RwXor);
             specialReservedWords.Add("shl", TokenTypes.RwShl);
             specialReservedWords.Add("shr", TokenTypes.RwShe);
-            specialReservedWords.Add("const", TokenTypes.RwConst);
+          
             specialReservedWords.Add("write", TokenTypes.RwWrite);
             specialReservedWords.Add("writeln", TokenTypes.RwWriteLn);
             specialReservedWords.Add("read", TokenTypes.RwRead);
@@ -106,6 +106,7 @@ namespace Mini_Compiler.Lexer
             reserverdWords.Add("var", TokenTypes.RwVar);
             reserverdWords.Add("repeat",TokenTypes.RwRepeat);
             reserverdWords.Add("array", TokenTypes.RwArray);
+            reserverdWords.Add("const", TokenTypes.RwConst);
 
 
 

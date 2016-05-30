@@ -58,7 +58,19 @@ namespace Mini_Compiler.Sintactico
                 ConsumeNextToken();
                      
               
-            }        
+            }       
+        else if (CompareTokenType(TokenTypes.RwConst))
+        {
+            Const();
+            if (CompareTokenType(TokenTypes.Eos))
+            {
+                ConsumeNextToken();
+            }
+            else
+            {
+                throw new SyntaticException("Expeceted ;", currentToken.Row, currentToken.Column);
+            }
+        } 
         else  if (CompareTokenType(TokenTypes.RwVar))
             {
               Declaration();
@@ -72,7 +84,11 @@ namespace Mini_Compiler.Sintactico
         else if (CompareTokenType(TokenTypes.RwType))
         {
             DeclarationType();
+            if (CompareTokenType(TokenTypes.RwEnd))
+            {
                 ConsumeNextToken();
+            }
+            
             if (CompareTokenType(TokenTypes.Eos))
             {
                 ConsumeNextToken();
@@ -109,6 +125,50 @@ namespace Mini_Compiler.Sintactico
 
         }
 
+        private void ConstDeclaretion()
+        {
+           
+      
+            ConsumeNextToken();
+            if (CompareTokenType(TokenTypes.EqualOp))
+            {
+                E();
+            }
+            else if (CompareTokenType(TokenTypes.Declaretion))
+            {
+                ConsumeNextToken();
+                if (CompareTokenType(TokenTypes.Id))
+                {
+                    ConsumeNextToken();
+                    if (CompareTokenType(TokenTypes.EqualOp))
+                    {
+                        E();
+                    }
+                }
+
+
+            }
+            else
+            {
+                throw new SyntaticException("Unexpected symbom", currentToken.Row, currentToken.Column);
+            }
+
+        }
+
+        private void Const()
+        {
+            ConsumeNextToken();
+            if (CompareTokenType(TokenTypes.Id))
+            {
+                ConstDeclaretion();
+            }
+            else
+            {
+                throw new SyntaticException("Expected id", currentToken.Row, currentToken.Column);
+            }
+
+        }
+
         private void DeclarationType()
         {
              ConsumeNextToken();
@@ -136,17 +196,27 @@ namespace Mini_Compiler.Sintactico
               
             }
 
-         else if (CompareTokenType(TokenTypes.array))
+         else if (CompareTokenType(TokenTypes.RwArray))
             {
                 ArrayDeclaretion();
+              
+                if (CompareTokenType(TokenTypes.Eos))
+                {
+                    return;
+                }
+                else
+                {
+                    throw  new SyntaticException("Expect Eos",currentToken.Row,currentToken.Column);
+                }
             }
 
 
-         else if (CompareTokenType(TokenTypes.SbRightParent))
+         else if (CompareTokenType(TokenTypes.SbLeftParent))
          {
-            IdList();
                 ConsumeNextToken();
-             if (CompareTokenType(TokenTypes.SbLeftParent))
+                IdList();
+              
+             if (CompareTokenType(TokenTypes.SbRightParent))
              {
                  ConsumeNextToken();
               
@@ -159,6 +229,11 @@ namespace Mini_Compiler.Sintactico
          }else if (CompareTokenType(TokenTypes.RwRecord))
          {
              PropertyList();
+             if (CompareTokenType(TokenTypes.Eos))
+             {
+                 ConsumeNextToken();
+             }
+             
          }
         }
 
@@ -194,7 +269,9 @@ namespace Mini_Compiler.Sintactico
         {
             ConsumeNextToken();
             if (CompareTokenType(TokenTypes.Id))
+                
             {
+                ConsumeNextToken();
                 return;
             }
         else if (CompareTokenType(TokenTypes.RwArray))
@@ -285,7 +362,7 @@ namespace Mini_Compiler.Sintactico
             else if (CompareTokenType(TokenTypes.RwArray))
             {
                 ArrayDeclaretion();
-                ConsumeNextToken();
+           
                 if (CompareTokenType(TokenTypes.Eos)==false)
                 {
                     throw  new SyntaticException("Expected ;",currentToken.Row,currentToken.Column);
@@ -400,11 +477,8 @@ namespace Mini_Compiler.Sintactico
         private void CaseLiteral()
         {
             ConsumeNextToken();
-            if (CompareTokenType(TokenTypes.NumericLiteral))
-            {
-                ListNum();
-            }
-            else if (CompareTokenType(TokenTypes.char_literal))
+            
+             if (CompareTokenType(TokenTypes.char_literal))
             {
                  ListChar();
             }
@@ -429,8 +503,20 @@ namespace Mini_Compiler.Sintactico
             }
             else
             {
-                throw new SyntaticException("Expected RangeOp",currentToken.Row,currentToken.Column);
+                throw new SyntaticException("Expected RangeOp", currentToken.Row, currentToken.Column);
             }
+         
+            if (CompareTokenType(TokenTypes.Eos))
+            {
+                return;
+            }
+
+            if(CompareTokenType(TokenTypes.CommaOperator))
+            {
+                RangeF();
+                
+            }
+            
 
 
         }
@@ -584,7 +670,7 @@ namespace Mini_Compiler.Sintactico
             if (currentToken.Type == TokenTypes.CommaOperator)
             {
                 OptonialId();
-                if (currentToken.Type == TokenTypes.AsiggnationOp)
+                if (currentToken.Type == TokenTypes.Declaretion)
                 {
                     ConsumeNextToken();
                     if (currentToken.Type == TokenTypes.Id)
@@ -625,7 +711,7 @@ namespace Mini_Compiler.Sintactico
                    throw new SyntaticException("Expected AsiggnationOp", currentToken.Row, currentToken.Column);
                 }
             }
-            else if (currentToken.Type == TokenTypes.AsiggnationOp)
+            else if (currentToken.Type == TokenTypes.Declaretion)
             {
                 AssignValue();
             }
@@ -771,8 +857,10 @@ namespace Mini_Compiler.Sintactico
             
             if (currentToken.Type == TokenTypes.StringLiteral)
             {
+               
+                currentToken = lexer.GetNextToken();
 
-                 return new ExpressionNode();//To do
+                return new ExpressionNode();//To do
             }
             if (currentToken.Type == TokenTypes.NumericLiteral)
             {

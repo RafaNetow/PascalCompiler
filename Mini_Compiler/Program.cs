@@ -17,11 +17,12 @@ namespace Mini_Compiler
           
             HandlerFiles handlFile = new HandlerFiles();
             string pascalCode = handlFile.getCode();
+            
             //Declaraciones
 
 
 
-            Syntactic parser = new Syntactic(new Lexer.Lexer(new StringContent(pascalCode)));
+            Syntactic parser = new Syntactic(new Lexer.Lexer(new StringContent(pascalCode.ToLower())));
             parser.Parse();
             Console.ReadKey();
             Console.WriteLine("");
