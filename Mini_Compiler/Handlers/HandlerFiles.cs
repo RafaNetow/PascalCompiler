@@ -28,6 +28,7 @@ namespace Mini_Compiler.Handlers
                 file = System.IO.File.ReadAllText(defaultPath);
             }
             catch (Exception e)
+
             {
                 Console.Write(" No se ha encontrado el archivo");
                 return "";

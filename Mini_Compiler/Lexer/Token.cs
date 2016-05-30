@@ -80,7 +80,10 @@
         RwContinnue,
         RwContinue,
         RwBreak,
-        char_literal
+        char_literal,
+        RwRecord,
+        array,
+        RwArray
     }
 
     public class Token

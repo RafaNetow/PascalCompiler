@@ -340,7 +340,7 @@ namespace Mini_Compiler.Lexer
                         {
                             return new Token
                             {
-                                Type = TokenTypes.AsiggnationOp,
+                                Type = TokenTypes.Declaretion,
                                  Lexeme =  lexeme,
                                  Column = tokenColumn,
                                  Row = tokenColumn

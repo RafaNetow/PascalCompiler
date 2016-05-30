@@ -81,7 +81,8 @@ namespace Mini_Compiler.Lexer
         }
         public void InitReservdWords()
         {
-            reserverdWords.Add("end", TokenTypes.RwEnd);     
+            reserverdWords.Add("end", TokenTypes.RwEnd);  
+            reserverdWords.Add("record",TokenTypes.RwRecord);   
             reserverdWords.Add("begin",TokenTypes.RwBegin);
             reserverdWords.Add("div", TokenTypes.RwDiv);
             reserverdWords.Add("mod", TokenTypes.RwMode);
@@ -104,6 +105,7 @@ namespace Mini_Compiler.Lexer
             reserverdWords.Add("of", TokenTypes.RwOf);
             reserverdWords.Add("var", TokenTypes.RwVar);
             reserverdWords.Add("repeat",TokenTypes.RwRepeat);
+            reserverdWords.Add("array", TokenTypes.RwArray);
 
 
 

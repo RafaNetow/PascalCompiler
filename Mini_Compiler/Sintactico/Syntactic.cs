@@ -7,6 +7,7 @@ using System.Linq.Expressions;
 using System.Runtime.InteropServices;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Versioning;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using Mini_Compiler.Lexer;
@@ -36,29 +37,51 @@ namespace Mini_Compiler.Sintactico
 
         public void Parse()
         {
-            ListSentence();
-            if (currentToken.Type != TokenTypes.Eof)
-            {
-                throw new SyntaticException("Se esperaba EOF",currentToken.Row, currentToken.Column);
-            }
+           Sentence();
+            
         }
 
+        
+        private void Sentence()
+        {
+            if (currentToken.Type == TokenTypes.Eof )
+             {
+                return;
+            }
+            ListSentence();
+            Sentence();
+        }
         private void ListSentence()
         {
             if (CompareTokenType(TokenTypes.Html))
             {         
                 ConsumeNextToken();
-                ListSentence();       
+                     
               
             }        
         else  if (CompareTokenType(TokenTypes.RwVar))
             {
-                Declaration();
+              Declaration();
+
             }
         else if (CompareTokenType(TokenTypes.RwIf))
          {
-            IfPascal();
-         }
+               IfPascal();
+              
+            }
+        else if (CompareTokenType(TokenTypes.RwType))
+        {
+            DeclarationType();
+                ConsumeNextToken();
+            if (CompareTokenType(TokenTypes.Eos))
+            {
+                ConsumeNextToken();
+            }
+            else
+            {
+                throw new SyntaticException("Expected ;",currentToken.Row,currentToken.Column);
+            }
+            }
         else if (CompareTokenType(TokenTypes.RwWhile))
         {
             While();
@@ -71,9 +94,256 @@ namespace Mini_Compiler.Sintactico
         {
             Case();
         }
-          
-       
-          
+        else if (CompareTokenType(TokenTypes.Id))
+        {
+            PreId();
+        if (CompareTokenType(TokenTypes.Eos))
+                    ConsumeNextToken();
+                
+            }
+
+        else
+        {
+            throw new Exception("Expected a sentences");
+        }
+
+        }
+
+        private void DeclarationType()
+        {
+             ConsumeNextToken();
+            if (CompareTokenType(TokenTypes.Id))
+            {
+                ConsumeNextToken();
+                if (CompareTokenType(TokenTypes.EqualOp))
+                {
+                    TypeF();
+                }
+            }
+            else
+            {
+                throw new SyntaxException("Expected Id");
+            }
+            
+        }
+
+        private void TypeF()
+        {
+              ConsumeNextToken();
+            if (CompareTokenType(TokenTypes.Id))
+            {
+                ConsumeNextToken();
+              
+            }
+
+         else if (CompareTokenType(TokenTypes.array))
+            {
+                ArrayDeclaretion();
+            }
+
+
+         else if (CompareTokenType(TokenTypes.SbRightParent))
+         {
+            IdList();
+                ConsumeNextToken();
+             if (CompareTokenType(TokenTypes.SbLeftParent))
+             {
+                 ConsumeNextToken();
+              
+             }
+             else
+             {
+                 throw new SyntaticException("Expected LeftParent", currentToken.Row, currentToken.Column);
+             }
+            
+         }else if (CompareTokenType(TokenTypes.RwRecord))
+         {
+             PropertyList();
+         }
+        }
+
+        private void ArrayDeclaretion()
+        {
+            
+            ConsumeNextToken();
+            if (CompareTokenType(TokenTypes.OpenBracketOperator))
+            {
+                RangeList();
+               
+                if (CompareTokenType(TokenTypes.CloseBracketOperator))
+                {
+                    ConsumeNextToken();
+                    if (CompareTokenType(TokenTypes.RwOf))
+                    {
+                        ArrayTypes();
+                    }
+                    else
+                    {
+                        throw new SyntaticException("Expected Reserverd Word Of",currentToken.Row,currentToken.Column);
+                    }
+                }
+                else
+                {
+                    throw new SyntaticException("Expected CloseBracker",currentToken.Row,currentToken.Column);
+                }
+
+            }
+        }
+
+        private void ArrayTypes()
+        {
+            ConsumeNextToken();
+            if (CompareTokenType(TokenTypes.Id))
+            {
+                return;
+            }
+        else if (CompareTokenType(TokenTypes.RwArray))
+        {
+            ArrayDeclaretion();
+        }
+        else
+        {
+            SubRange();
+        }
+
+
+        }
+
+        private void RangeList()
+        {
+            RangeF();
+            
+            
+
+        }
+
+        private void RangeF()
+        {
+            ConsumeNextToken();
+            if (CompareTokenType(TokenTypes.Id))
+            {
+                ConsumeNextToken();
+
+
+
+            }
+            else
+            {
+                SubRange();
+            }
+
+        }
+
+        private void PropertyList()
+        {
+
+            ConsumeNextToken();
+            if (CompareTokenType(TokenTypes.RwEnd) == false)
+            {
+
+
+                IdList();
+
+                if (CompareTokenType(TokenTypes.Declaretion))
+                {
+                    RecordType();
+                    if (CompareTokenType(TokenTypes.Eos)==false)
+                    {
+                        throw new SyntaticException("Expected EOS", currentToken.Row, currentToken.Column);
+
+                    }
+                    
+                }
+                else
+                {
+                    throw new SyntaticException("Expected Declaretion", currentToken.Row, currentToken.Column);
+                }
+
+
+
+                PropertyList();
+
+            }
+
+
+        }
+
+        private void RecordType()
+        {
+            ConsumeNextToken();
+            if (CompareTokenType(TokenTypes.Id))
+            {
+                ConsumeNextToken();
+                return;
+            }
+            else if (CompareTokenType(TokenTypes.RwRecord))
+            {
+                PropertyList();
+            }
+
+
+            else if (CompareTokenType(TokenTypes.RwArray))
+            {
+                ArrayDeclaretion();
+                ConsumeNextToken();
+                if (CompareTokenType(TokenTypes.Eos)==false)
+                {
+                    throw  new SyntaticException("Expected ;",currentToken.Row,currentToken.Column);
+                }
+            }
+            
+        }
+
+        private void PreId()
+        {
+             ConsumeNextToken();
+            if (CompareTokenType(TokenTypes.AsiggnationOp))
+            {
+                E();
+            }
+           else if (CompareTokenType(TokenTypes.SbLeftParent))
+            {
+
+                ExpressionList();
+                ConsumeNextToken();
+                if (CompareTokenType(TokenTypes.SbRightParent))
+                {
+                    ConsumeNextToken();
+                    if (CompareTokenType(TokenTypes.Eos))
+                    {
+                        ConsumeNextToken();
+                        return;
+                    }
+                    else
+                    {
+
+                        ListSentence();
+                    }
+                }
+                
+
+
+            }
+
+        }
+
+        private void ExpressionList()
+        {
+            E();
+            ExpressionListOp();
+            
+            
+        }
+
+        private void ExpressionListOp()
+        {
+            ConsumeNextToken();
+            if (CompareTokenType(TokenTypes.CommaOperator))
+            {
+                ExpressionList();
+            }
+
+            return;
         }
 
         private void Case()
@@ -88,7 +358,33 @@ namespace Mini_Compiler.Sintactico
                     CaseList();
                 }
             }
+            
            
+        }
+
+        private void ListChar()
+        {
+
+            ConsumeNextToken();
+            if (CompareTokenType(TokenTypes.CommaOperator))
+            {
+                CharOptional();
+            }
+        }
+
+        private void CharOptional()
+        {
+            ConsumeNextToken();
+            if (CompareTokenType(TokenTypes.Id))
+            {
+                ListChar();
+            }
+            else
+            {
+                throw new SyntaticException("Expected id", currentToken.Row, currentToken.Column);
+            }
+            
+
         }
 
         private void CaseList()
@@ -108,8 +404,35 @@ namespace Mini_Compiler.Sintactico
             {
                 ListNum();
             }
-          //  if(CompareTokenType())
+            else if (CompareTokenType(TokenTypes.char_literal))
+            {
+                 ListChar();
+            }
+            else if (CompareTokenType(TokenTypes.Id))
+            {
+                IdList();
+            }
+            else
+            {
+                SubRange();
+            }
           
+        }
+
+        private void SubRange()
+        {
+            E();
+           
+            if (CompareTokenType(TokenTypes.RangeOp))
+            {
+                E();
+            }
+            else
+            {
+                throw new SyntaticException("Expected RangeOp",currentToken.Row,currentToken.Column);
+            }
+
+
         }
 
         private void ListNum()
@@ -191,15 +514,27 @@ namespace Mini_Compiler.Sintactico
             {
 
                 Block();
-                ConsumeNextToken();
+
                 if (CompareTokenType(TokenTypes.Eos))
-                    return;
+                {
+                    ConsumeNextToken();
+
+
+                }
                 if (CompareTokenType(TokenTypes.RwElse))
                 {
                     Else();
+
+                    if (CompareTokenType(TokenTypes.Eos))
+                        ConsumeNextToken();
+                }
+                else
+                {
+                    throw new SyntaxException("Expected  EOS");
                 }
                
-                throw  new SyntaxException("Expected  EOS");
+               
+                
             }
         }
 
@@ -258,7 +593,7 @@ namespace Mini_Compiler.Sintactico
                         if (currentToken.Type == TokenTypes.Eos)
                         {
                             ConsumeNextToken();
-                            ListSentence();
+                           
                         }
                         else
                         {
@@ -283,7 +618,7 @@ namespace Mini_Compiler.Sintactico
                 else if (currentToken.Type == TokenTypes.Html)
                 {
                     ConsumeNextToken();
-                    ListSentence();
+                 
                 }
                 else
                 {
@@ -327,11 +662,12 @@ namespace Mini_Compiler.Sintactico
             {
                 IdList();
             }
-             
             else
             {
-                throw new SyntaticException("Expected ID",currentToken.Row,currentToken.Column);
-            }     
+                throw new SyntaticException("Expected ID", currentToken.Row, currentToken.Column);
+            }
+             
+               
         }
         
         private void IdList()
@@ -341,43 +677,14 @@ namespace Mini_Compiler.Sintactico
             {
                 OptonialId();
             }
-            else if (currentToken.Type == TokenTypes.AsiggnationOp)
-            {
-                ConsumeNextToken();
-                if (currentToken.Type == TokenTypes.Id)
-                {
-                    ConsumeNextToken();
-                    if (currentToken.Type == TokenTypes.Eos)
-                    {
-                        ConsumeNextToken();
-                        ListSentence();
-                    }          
-                    else if (currentToken.Type == TokenTypes.EqualOp)
-                    {
-                        AssignValue();
-                    }
-               //     else if(currentToken.Type == TokenT)
-                    else
-                    {
-                        throw  new SyntaticException("Expected EOS",currentToken.Row, currentToken.Column);
-                        throw  new SyntaticException("Expected EOS",currentToken.Row, currentToken.Column);
-                    }
-                    
-                }
-                else
-                {
-                    throw new SyntaticException("Expected Id", currentToken.Row, currentToken.Column);
-                }
-                
-            }
             else
             {
-                 throw new SyntaticException("Expected AssingOp", currentToken.Row, currentToken.Column);
+                return;
             }
 
-            {
-                
-            }
+
+
+
         }
 
         public void ConsumeNextToken()
@@ -448,6 +755,7 @@ namespace Mini_Compiler.Sintactico
                 var node = new DivNode() { LeftOperand = param, RightOperand = fValue };
                 return TP(node);
             }
+           
             else
             {
                 return param;
@@ -457,6 +765,15 @@ namespace Mini_Compiler.Sintactico
 
         private ExpressionNode F() //id, num (E) Epsilon
         {
+            ConsumeNextToken();
+
+
+            
+            if (currentToken.Type == TokenTypes.StringLiteral)
+            {
+
+                 return new ExpressionNode();//To do
+            }
             if (currentToken.Type == TokenTypes.NumericLiteral)
             {
                 var value = float.Parse(currentToken.Lexeme);
@@ -487,7 +804,7 @@ namespace Mini_Compiler.Sintactico
             }
             else
             {
-                throw new SyntaticException("Expected Expression",currentToken.Row,currentToken.Column);
+                return new IdNode();
             }
         }
 
@@ -601,9 +918,10 @@ namespace Mini_Compiler.Sintactico
         public SyntaticException(string message, Exception innerException)   : base(message, innerException) {
         }
 
-        public SyntaticException(string message, int row, int column) : base (message)
+        public SyntaticException(string message, int row, int column)
+            : base( message + "Column :" + column.ToString() + "Row :" + row.ToString())
         {
-            message = message + "Column :" + column.ToString() + "Row :" + row.ToString();
+            
             
         }
         
