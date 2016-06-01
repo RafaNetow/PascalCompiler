@@ -10,6 +10,7 @@ using System.Runtime.Versioning;
 using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.SqlServer.Server;
 using Mini_Compiler.Lexer;
 
 namespace Mini_Compiler.Sintactico
@@ -58,7 +59,20 @@ namespace Mini_Compiler.Sintactico
                 ConsumeNextToken();
                      
               
-            }       
+            }
+        else if (CompareTokenType(TokenTypes.RwWhile))
+        {
+            While();
+        }
+        else if (CompareTokenType(TokenTypes.RwProcedure))
+        {
+            Procedure();
+            if (CompareTokenType(TokenTypes.Eos))
+              {
+                    ConsumeNextToken();
+                }
+            }
+                       
         else if (CompareTokenType(TokenTypes.RwConst))
         {
             Const();
@@ -110,6 +124,12 @@ namespace Mini_Compiler.Sintactico
         {
             Case();
         }
+        else if (CompareTokenType(TokenTypes.RwFor))
+        {
+            PreFor();
+           
+
+        }
         else if (CompareTokenType(TokenTypes.Id))
         {
             PreId();
@@ -118,11 +138,202 @@ namespace Mini_Compiler.Sintactico
                 
             }
 
-        else
-        {
-            throw new Exception("Expected a sentences");
+            
+
         }
 
+        private void PreFor()
+        {
+            ConsumeNextToken();
+            if (CompareTokenType(TokenTypes.Id))
+            {
+                ConsumeNextToken();
+                if (CompareTokenType(TokenTypes.AsiggnationOp))
+                {
+                    For();
+                    if (CompareTokenType(TokenTypes.RwEnd))
+                    {
+                        ConsumeNextToken();
+                        if (CompareTokenType(TokenTypes.Eos))
+                        {
+                            ConsumeNextToken();
+                        }
+                    }
+                    
+                }
+                else if (CompareTokenType(TokenTypes.RwIn))
+                {
+                    FORIN();
+                }
+
+
+
+            }
+
+        }
+
+        private void FORIN()
+        {
+            
+
+        }
+
+        private void For()
+        {
+            ConsumeNextToken();
+                E();
+                if (CompareTokenType((TokenTypes.RwTo)))
+                {
+                ConsumeNextToken();
+                E();
+                    if (CompareTokenType(TokenTypes.RwDo))
+                    {
+                       LoopBlock();
+                        if (CompareTokenType(TokenTypes.RwEnd))
+                        {
+                            return;
+                        }
+                        else
+                        {
+                            ConsumeNextToken();
+                        }
+                        //Podria controlarlo aqui
+
+                }
+            }
+
+        }
+
+        private void LoopBlock()
+        {
+            
+            if (CompareTokenType(TokenTypes.RwBegin))
+            {
+                LoopS();
+                //Podria controlarlo aqui
+            }
+            else
+            {
+                LoopS();
+            }
+
+            if (CompareTokenType(TokenTypes.RwEnd)==false)
+            {
+                LoopBlock();
+            }
+        }
+
+        private void Procedure()
+        {
+            ConsumeNextToken();
+             if (CompareTokenType(TokenTypes.Id))
+            {
+                Params();
+                if (CompareTokenType(TokenTypes.Eos))
+                {
+                    FunctionBlock();
+                }
+                else
+                {
+                    throw new SyntaticException("Expected ;",currentToken.Row,currentToken.Column);
+                }
+            }
+            else
+            {
+                throw new SyntaticException("Expected id", currentToken.Row, currentToken.Column);
+            }
+
+        }
+
+        private void FunctionBlock()
+        {
+            ConsumeNextToken();
+            if (CompareTokenType(TokenTypes.RwBegin))
+            {
+                ConsumeNextToken();
+                while (CompareTokenType(TokenTypes.RwEnd) == false)
+                {
+                    ListSentence();
+                }
+                ConsumeNextToken();
+
+               
+            }
+
+        }
+
+        private void Params()
+        {
+            
+            ConsumeNextToken();
+            if (CompareTokenType(TokenTypes.SbLeftParent))
+            {
+                DeclarationList();
+                if (CompareTokenType(TokenTypes.SbRightParent))
+                {
+                    ConsumeNextToken();
+                }
+            }
+            {
+                
+            }
+        }
+
+        private void DeclarationList()
+        {
+
+            DeclarationParam();
+        }
+
+        private void DeclarationParam()
+        {
+            
+            ConsumeNextToken();
+
+            if (CompareTokenType(TokenTypes.RwVar))
+            {
+                ConsumeNextToken();
+                if (CompareTokenType(TokenTypes.Id))
+                {
+                    IdList();
+                }
+                else
+                {
+                    throw new SyntaticException("Excpted Id",currentToken.Row,currentToken.Column);
+                }
+                if (CompareTokenType(TokenTypes.Declaretion))
+                {
+                    ConsumeNextToken();
+                    if (CompareTokenType(TokenTypes.Id))
+                    {
+                        ConsumeNextToken();
+                    }
+                    else
+                    {
+                        throw new SyntaticException("Excpted Id", currentToken.Row, currentToken.Column);
+                    }
+                }
+                if(CompareTokenType(TokenTypes.Eos))
+                {
+                  DeclarationParam();
+                }
+
+            }
+
+            if (CompareTokenType(TokenTypes.Id))
+            {
+                ConsumeNextToken();
+                if (CompareTokenType(TokenTypes.Declaretion))
+                {
+                    ConsumeNextToken();
+
+                    if (CompareTokenType(TokenTypes.Id))
+                    {
+                        ConsumeNextToken();
+                    }
+
+                }
+            }
         }
 
         private void ConstDeclaretion()
@@ -568,21 +779,29 @@ namespace Mini_Compiler.Sintactico
         private void While()
         {
             E();
+
+            if(CompareTokenType(TokenTypes.Id))
             ConsumeNextToken();
             if (CompareTokenType(TokenTypes.RwDo))
             {
-                LoopS();
+                LoopBlock();
             }
 
         }
 
         private void LoopS()
         {
+            ConsumeNextToken();
             if (CompareTokenType(TokenTypes.RwContinnue))
             {
                 return;
             }
             if (CompareTokenType(TokenTypes.RwWhile))
+            {
+                return;
+            }
+
+            else if(CompareTokenType(TokenTypes.RwEnd))
             {
                 return;
             }
@@ -600,6 +819,10 @@ namespace Mini_Compiler.Sintactico
             {
 
                 Block();
+                if (CompareTokenType(TokenTypes.Html))
+                {
+                    return;
+                }
 
                 if (CompareTokenType(TokenTypes.Eos))
                 {
@@ -607,17 +830,14 @@ namespace Mini_Compiler.Sintactico
 
 
                 }
-                if (CompareTokenType(TokenTypes.RwElse))
+              if (CompareTokenType(TokenTypes.RwElse))
                 {
                     Else();
 
                     if (CompareTokenType(TokenTypes.Eos))
                         ConsumeNextToken();
                 }
-                else
-                {
-                    throw new SyntaxException("Expected  EOS");
-                }
+               
                
                
                 
@@ -663,6 +883,8 @@ namespace Mini_Compiler.Sintactico
             }
         }
         //Y en mi Gramatica
+
+        
         private void FactorComunIdPrime()
         {
             //IdOpcional
