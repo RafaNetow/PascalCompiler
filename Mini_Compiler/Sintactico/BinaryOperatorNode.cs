@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Mini_Compiler.Sintactico
 {
-    class BinaryOperatorNode :ExpressionNode
+    public class BinaryOperatorNode :ExpressionNode
     {
         public ExpressionNode RightOperand;
         public ExpressionNode LeftOperand;

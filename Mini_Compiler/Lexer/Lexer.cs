@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,9 +14,13 @@ namespace Mini_Compiler.Lexer
         private Symbol _currentSymbol;
         private bool _pascalMode;
         private ReserverdWords rw = new ReserverdWords();
+        public Stack<Token> _tokenStack = new Stack<Token>();
+        
 
         public bool OnlyHexInString(string test)
         {
+            
+            
             // For C-style hex notation (0xFF) you can use @"\A\b(0[xX])?[0-9a-fA-F]+\b\Z"
             return System.Text.RegularExpressions.Regex.IsMatch(test, @"\A\b[0-9a-fA-F]+\b\Z");
         }
@@ -27,9 +32,26 @@ namespace Mini_Compiler.Lexer
             
         }
 
+
+
+
+
         
+
+        public void pushBack(Token t)
+        {
+            _tokenStack.Push(t);
+        }
+
+
         public Token GetNextToken()
         {
+            if (_tokenStack.Count > 0)
+            {
+                return _tokenStack.Pop();
+            }
+
+
             int state = 100;
             string lexeme = "";
             int eof = 0;

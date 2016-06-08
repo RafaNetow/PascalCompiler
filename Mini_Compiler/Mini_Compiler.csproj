@@ -59,12 +59,16 @@
     <Compile Include="SampleParser.cs" />
     <Compile Include="SampleParserBinaryToFloat.cs" />
     <Compile Include="Sintactico\BinaryOperatorNode.cs" />
+    <Compile Include="Sintactico\ExpressionNode.cs" />
+    <Compile Include="Sintactico\IdNode.cs" />
     <Compile Include="Sintactico\Syntactic.cs" />
+    <Compile Include="Tree\Nodes.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Lexer\App.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -23,7 +23,8 @@ namespace Mini_Compiler
 
 
             Syntactic parser = new Syntactic(new Lexer.Lexer(new StringContent(pascalCode.ToLower())));
-            parser.Parse();
+          var treeNodes =   parser.Parse();
+            treeNodes.Reverse();
             Console.ReadKey();
             Console.WriteLine("");
         }

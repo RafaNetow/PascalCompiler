@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.SqlServer.Server;
 using Mini_Compiler.Lexer;
+using Mini_Compiler.Tree;
 
 namespace Mini_Compiler.Sintactico
 {
@@ -31,116 +32,164 @@ namespace Mini_Compiler.Sintactico
             this.currentToken = currentToken;
         }
 
-        public Syntactic(
-            )
-        {
-        }
 
-        public void Parse()
+
+        public List<Tree.SentencesNode> Parse()
         {
-           Sentence();
-            
+          var sentencesList = Sentence();
+            return sentencesList;
         }
 
         
-        private void Sentence()
+        private List<Tree.SentencesNode> Sentence()
         {
+          
+            
             if (currentToken.Type == TokenTypes.Eof )
              {
-                return;
+                return new List<Tree.SentencesNode>();
             }
-            ListSentence();
-            Sentence();
+                      
+                var sentence =  ListSentence();
+               
+            
+           var listSentences = Sentence();
+            if (sentence != null)
+                listSentences.Insert(0,sentence);
+            return listSentences;
         }
-        private void ListSentence()
+
+        public Tree.SentencesNode ListSentence()
         {
-            if (CompareTokenType(TokenTypes.Html))
-            {         
-                ConsumeNextToken();
-                     
-              
-            }
-        else if (CompareTokenType(TokenTypes.RwWhile))
-        {
-            While();
-        }
-        else if (CompareTokenType(TokenTypes.RwProcedure))
-        {
-            Procedure();
-            if (CompareTokenType(TokenTypes.Eos))
-              {
+            
+                if (CompareTokenType(TokenTypes.Html))
+                {
                     ConsumeNextToken();
+
+
+                }
+                else if (CompareTokenType(TokenTypes.RwFunction))
+                {
+                    FunctionDecla();
+                }
+                else if (CompareTokenType(TokenTypes.RwWhile))
+                {
+                    While();
+                }
+                else if (CompareTokenType(TokenTypes.RwProcedure))
+                {
+                    Procedure();
+                    if (CompareTokenType(TokenTypes.Eos))
+                    {
+                        ConsumeNextToken();
+                    }
+                }
+
+                else if (CompareTokenType(TokenTypes.RwConst))
+                {
+                    Const();
+                    if (CompareTokenType(TokenTypes.Eos))
+                    {
+                        ConsumeNextToken();
+                    }
+                    else
+                    {
+                        throw new SyntaticException("Expeceted ;", currentToken.Row, currentToken.Column);
+                    }
+                }
+                else if (CompareTokenType(TokenTypes.RwVar))
+                {
+                    return Declaration();
+
+                }
+                else if (CompareTokenType(TokenTypes.RwIf))
+                {
+                    var ifNode = IfPascal();
+                    return ifNode;
+
+
+                }
+                else if (CompareTokenType(TokenTypes.RwType))
+                {
+                    DeclarationType();
+                    if (CompareTokenType(TokenTypes.RwEnd))
+                    {
+                        ConsumeNextToken();
+                    }
+
+                    if (CompareTokenType(TokenTypes.Eos))
+                    {
+                        ConsumeNextToken();
+                    }
+                    else
+                    {
+                        throw new SyntaticException("Expected ;", currentToken.Row, currentToken.Column);
+                    }
+                }
+                else if (CompareTokenType(TokenTypes.RwWhile))
+                {
+                    While();
+                }
+                else if (CompareTokenType(TokenTypes.RwRepeat))
+                {
+                    Repeat();
+                }
+                else if (CompareTokenType(TokenTypes.RwCase))
+                {
+                    Case();
+                }
+                else if (CompareTokenType(TokenTypes.RwFor))
+                {
+                    PreFor();
+
+
+                }
+                else if (CompareTokenType(TokenTypes.Id))
+                {
+                    PreId();
+                    if (CompareTokenType(TokenTypes.Eos))
+                        ConsumeNextToken();
+
+                }
+
+
+                return null;
+            }
+        
+
+        private void FunctionDecla()
+        {
+            
+            ConsumeNextToken();
+            if (CompareTokenType(TokenTypes.Id))
+            {
+                Params();
+            }
+
+            if (CompareTokenType(TokenTypes.AsiggnationOp))
+            {
+                ConsumeNextToken();
+
+                if (CompareTokenType(TokenTypes.Id))
+                {
+                 ConsumeNextToken();
+                    if (CompareTokenType(TokenTypes.Eos))
+                    {
+                        FunctionBlock();
+                    }
+                    else
+                    {
+                        throw new SyntaticException("Expected ;",currentToken.Row,currentToken.Column);
+                    }   
                 }
             }
-                       
-        else if (CompareTokenType(TokenTypes.RwConst))
-        {
-            Const();
-            if (CompareTokenType(TokenTypes.Eos))
-            {
-                ConsumeNextToken();
-            }
             else
             {
-                throw new SyntaticException("Expeceted ;", currentToken.Row, currentToken.Column);
-            }
-        } 
-        else  if (CompareTokenType(TokenTypes.RwVar))
-            {
-              Declaration();
-
-            }
-        else if (CompareTokenType(TokenTypes.RwIf))
-         {
-               IfPascal();
-              
-            }
-        else if (CompareTokenType(TokenTypes.RwType))
-        {
-            DeclarationType();
-            if (CompareTokenType(TokenTypes.RwEnd))
-            {
-                ConsumeNextToken();
-            }
-            
-            if (CompareTokenType(TokenTypes.Eos))
-            {
-                ConsumeNextToken();
-            }
-            else
-            {
-                throw new SyntaticException("Expected ;",currentToken.Row,currentToken.Column);
-            }
-            }
-        else if (CompareTokenType(TokenTypes.RwWhile))
-        {
-            While();
-        }
-        else if(CompareTokenType(TokenTypes.RwRepeat))
-        {
-            Repeat();
-        }
-        else if (CompareTokenType(TokenTypes.RwCase))
-        {
-            Case();
-        }
-        else if (CompareTokenType(TokenTypes.RwFor))
-        {
-            PreFor();
-           
-
-        }
-        else if (CompareTokenType(TokenTypes.Id))
-        {
-            PreId();
-        if (CompareTokenType(TokenTypes.Eos))
-                    ConsumeNextToken();
-                
+                throw new SyntaticException("Expected :",currentToken.Row,currentToken.Column);
             }
 
-            
-
         }
+
 
         private void PreFor()
         {
@@ -172,10 +221,23 @@ namespace Mini_Compiler.Sintactico
 
         }
 
-        private void FORIN()
+        private SentencesNode FORIN()
         {
-            
-
+           ConsumeNextToken();
+            if (CompareTokenType(TokenTypes.Id))
+            {
+                ConsumeNextToken();
+                if (CompareTokenType(TokenTypes.RwDo))
+                {
+                    ConsumeNextToken();
+                    LoopBlock();
+                }
+            }
+            else
+            {
+                throw new SyntaticException("Expected id", currentToken.Row, currentToken.Column);
+            }
+            return null;
         }
 
         private void For()
@@ -209,21 +271,24 @@ namespace Mini_Compiler.Sintactico
             
             if (CompareTokenType(TokenTypes.RwBegin))
             {
+                ConsumeNextToken();
                 LoopS();
                 //Podria controlarlo aqui
+                while(CompareTokenType(TokenTypes.RwEnd) == false)
+                {
+                   LoopS();
+                }
             }
+
             else
             {
                 LoopS();
             }
 
-            if (CompareTokenType(TokenTypes.RwEnd)==false)
-            {
-                LoopBlock();
-            }
+            
         }
 
-        private void Procedure()
+        private SentencesNode Procedure()
         {
             ConsumeNextToken();
              if (CompareTokenType(TokenTypes.Id))
@@ -243,6 +308,7 @@ namespace Mini_Compiler.Sintactico
                 throw new SyntaticException("Expected id", currentToken.Row, currentToken.Column);
             }
 
+            return null;
         }
 
         private void FunctionBlock()
@@ -253,12 +319,13 @@ namespace Mini_Compiler.Sintactico
                 ConsumeNextToken();
                 while (CompareTokenType(TokenTypes.RwEnd) == false)
                 {
-                    ListSentence();
+                    var sentencesNode = ListSentence();
                 }
                 ConsumeNextToken();
 
                
             }
+
 
         }
 
@@ -287,15 +354,19 @@ namespace Mini_Compiler.Sintactico
 
         private void DeclarationParam()
         {
-            
-            ConsumeNextToken();
+
+            List<IdNode> idList = new List<IdNode>(); 
+                ConsumeNextToken();
 
             if (CompareTokenType(TokenTypes.RwVar))
             {
                 ConsumeNextToken();
+
+                
                 if (CompareTokenType(TokenTypes.Id))
                 {
-                    IdList();
+                    idList.Add(new IdNode {Value = currentToken.Lexeme});
+                    IdList(idList);
                 }
                 else
                 {
@@ -425,7 +496,9 @@ namespace Mini_Compiler.Sintactico
          else if (CompareTokenType(TokenTypes.SbLeftParent))
          {
                 ConsumeNextToken();
-                IdList();
+                List<IdNode> idList = new List<IdNode>();
+                idList.Add(new IdNode {Value = currentToken.Lexeme});
+                IdList(idList);
               
              if (CompareTokenType(TokenTypes.SbRightParent))
              {
@@ -530,7 +603,9 @@ namespace Mini_Compiler.Sintactico
             {
 
 
-                IdList();
+                List<IdNode> idList = new List<IdNode>(); 
+                idList.Add(new IdNode { Value = currentToken.Lexeme});
+                    IdList(idList);
 
                 if (CompareTokenType(TokenTypes.Declaretion))
                 {
@@ -588,12 +663,14 @@ namespace Mini_Compiler.Sintactico
             if (CompareTokenType(TokenTypes.AsiggnationOp))
             {
                 E();
+                ConsumeNextToken();
+                return;
             }
            else if (CompareTokenType(TokenTypes.SbLeftParent))
             {
-
+                
                 ExpressionList();
-                ConsumeNextToken();
+      
                 if (CompareTokenType(TokenTypes.SbRightParent))
                 {
                     ConsumeNextToken();
@@ -604,8 +681,7 @@ namespace Mini_Compiler.Sintactico
                     }
                     else
                     {
-
-                        ListSentence();
+                        var sentencesNode = ListSentence();
                     }
                 }
                 
@@ -617,15 +693,23 @@ namespace Mini_Compiler.Sintactico
 
         private void ExpressionList()
         {
+            //Arreglar
+            ConsumeNextToken();
             E();
+        
+            if (CompareTokenType(TokenTypes.SbRightParent))
+            {
+                return;
+            }
             ExpressionListOp();
+            
             
             
         }
 
         private void ExpressionListOp()
         {
-            ConsumeNextToken();
+           // ConsumeNextToken();
             if (CompareTokenType(TokenTypes.CommaOperator))
             {
                 ExpressionList();
@@ -636,16 +720,17 @@ namespace Mini_Compiler.Sintactico
 
         private void Case()
         {
-            
-            ConsumeNextToken();
-            if (CompareTokenType(TokenTypes.Id))
-            {
+        
+
+        ConsumeNextToken();
+            E();
+           
                 ConsumeNextToken();
                 if (CompareTokenType(TokenTypes.RwOf))
                 {
                     CaseList();
                 }
-            }
+            
             
            
         }
@@ -678,24 +763,35 @@ namespace Mini_Compiler.Sintactico
         private void CaseList()
         {
 
-            if (CompareTokenType(TokenTypes.RwElse)) 
-                {
-                  Else();  
-                } 
-            CaseLiteral();
+            if (CompareTokenType(TokenTypes.RwElse))
+            {
+                Else();
+            }
+
+           else 
+            {
+                CaseLiteral();
+            }
         }
 
         private void CaseLiteral()
         {
             ConsumeNextToken();
-            
-             if (CompareTokenType(TokenTypes.char_literal))
+
+
+            if (CompareTokenType(TokenTypes.NumericLiteral))
+            {
+                ListNum();
+            }
+            else if (CompareTokenType(TokenTypes.char_literal))
             {
                  ListChar();
             }
             else if (CompareTokenType(TokenTypes.Id))
             {
-                IdList();
+                List<IdNode> idList = new List<IdNode>();
+                idList.Add(new  IdNode {Value = currentToken.Lexeme});
+                IdList(idList);
             }
             else
             {
@@ -758,25 +854,35 @@ namespace Mini_Compiler.Sintactico
 
         private void Repeat()
         {
+          ConsumeNextToken();
             LS_LOOP();
+
+            while (CompareTokenType(TokenTypes.RwUntil)==false)
+            {
+                LS_LOOP();
+            }
+
+            E();
+           ConsumeNextToken();
+
+            if (CompareTokenType(TokenTypes.Eos))
+            {
+                ConsumeNextToken();
+            }
+            
         }
 
         private void LS_LOOP()
         {
             
             LoopS();
-            ConsumeNextToken();
-            if (CompareTokenType(TokenTypes.Eos))
-            {
-                return;
-            }
-            else
-            {
-                LoopS();
-            }
+           
+
+         
+
         }
 
-        private void While()
+        private SentencesNode While()
         {
             E();
 
@@ -784,19 +890,29 @@ namespace Mini_Compiler.Sintactico
             ConsumeNextToken();
             if (CompareTokenType(TokenTypes.RwDo))
             {
+                ConsumeNextToken();
                 LoopBlock();
+                if (CompareTokenType(TokenTypes.RwEnd))
+                {
+                    ConsumeNextToken();
+                    if (CompareTokenType(TokenTypes.Eos))
+                    {
+                        ConsumeNextToken();
+                    }
+                }
             }
 
+            return null;
         }
 
         private void LoopS()
         {
-            ConsumeNextToken();
+            
             if (CompareTokenType(TokenTypes.RwContinnue))
             {
                 return;
             }
-            if (CompareTokenType(TokenTypes.RwWhile))
+            if (CompareTokenType(TokenTypes.RwBreak))
             {
                 return;
             }
@@ -807,75 +923,83 @@ namespace Mini_Compiler.Sintactico
             }
             else
             {
-                ListSentence();
+                var sentencesNode = ListSentence();
             }
-
         }
 
-        private void IfPascal()
+        private IfNode IfPascal()
         {
-            E();
+            var trueBlock = new List<Tree.SentencesNode>();
+            var falseBlock = new List<Tree.SentencesNode>();
+            var expression =  E();
             if (currentToken.Type == TokenTypes.RwThen)
             {
 
-                Block();
+                var trueB = Block();
+                trueBlock.AddRange(trueB); 
                 if (CompareTokenType(TokenTypes.Html))
                 {
-                    return;
+                    return null;
                 }
 
                 if (CompareTokenType(TokenTypes.Eos))
                 {
                     ConsumeNextToken();
 
-
                 }
               if (CompareTokenType(TokenTypes.RwElse))
                 {
-                    Else();
+                   falseBlock=  Else();
 
                     if (CompareTokenType(TokenTypes.Eos))
                         ConsumeNextToken();
                 }
                
-               
+               return  new IfNode { _falseBlock = falseBlock, _trueBlock = trueBlock, _ifCondition = expression};
                
                 
             }
+            return null;
         }
 
-        private void Else()
+        private List<Tree.SentencesNode> Else()
         {
-            Block();
+            var listBlock = Block();
+            return listBlock;
         }
 
-        private void Block()
+        private List<Tree.SentencesNode> Block()
         {
-            ConsumeNextToken();
+           
+                ConsumeNextToken();
             if (CompareTokenType(TokenTypes.RwBegin))
             {
-                Parse();
+             var  listSentences =   Parse();
+                
                 if (CompareTokenType(TokenTypes.RwEnd))
                 {
-                    return;
+                    return new List<Tree.SentencesNode>();
                 }
 
             }
-            ListSentence();
+            var sentencesNode = ListSentence();
+            //    listSentences.Add(sentencesNode);
+           // return listSentences ;
+            return null;
         }
 
-        private void Declaration()
+        private DeclarationNode Declaration()
         {
-            FactorComunId();
 
+            return FactorComunId(); ;
         }
 
-        private void FactorComunId()
+        private DeclarationNode FactorComunId()
         {
             ConsumeNextToken();
             if (currentToken.Type==TokenTypes.Id)
             {
-                FactorComunIdPrime();
+               return  FactorComunIdPrime();
             }
             else
             {
@@ -885,22 +1009,31 @@ namespace Mini_Compiler.Sintactico
         //Y en mi Gramatica
 
         
-        private void FactorComunIdPrime()
+        private DeclarationNode FactorComunIdPrime()
         {
             //IdOpcional
+
+
+            var listId =  new List<IdNode>();
+            listId.Add(new IdNode {Value = currentToken.Lexeme});
+
             ConsumeNextToken();
+
             if (currentToken.Type == TokenTypes.CommaOperator)
             {
-                OptonialId();
+               var OptionList=  OptonialId(listId);
+            
                 if (currentToken.Type == TokenTypes.Declaretion)
                 {
                     ConsumeNextToken();
                     if (currentToken.Type == TokenTypes.Id)
                     {
+                        IdNode typeId = new IdNode {Value = currentToken.Lexeme};
                         ConsumeNextToken();
                         if (currentToken.Type == TokenTypes.Eos)
                         {
                             ConsumeNextToken();
+                            return new DeclarationNode {Expression = false,TypeId = typeId,LIstIdNode = listId};
                            
                         }
                         else
@@ -909,19 +1042,12 @@ namespace Mini_Compiler.Sintactico
                         }
                     }
 
-                    else if (currentToken.Type == TokenTypes.Eof)
-                    {
-                        return;
-                    }
+                    
                    
                     else
                     {
                         throw  new SyntaticException("Expected Id", currentToken.Row, currentToken.Column);
                     }
-                }
-                else if (currentToken.Type == TokenTypes.Eof)
-                {
-                    return;
                 }
                 else if (currentToken.Type == TokenTypes.Html)
                 {
@@ -930,32 +1056,40 @@ namespace Mini_Compiler.Sintactico
                 }
                 else
                 {
-                   throw new SyntaticException("Expected AsiggnationOp", currentToken.Row, currentToken.Column);
+                   throw new SyntaticException("Expected Declaration", currentToken.Row, currentToken.Column);
                 }
             }
             else if (currentToken.Type == TokenTypes.Declaretion)
             {
-                AssignValue();
+
+           ConsumeNextToken();
+
+           var typeId = new IdNode {Value = currentToken.Lexeme};
+                ConsumeNextToken();
+           var expression =    AssignValue();
+          return new DeclarationNode {Expression = true, LIstIdNode = listId,TypeId = typeId,ExpressionType = expression};
+
             }
             else if (currentToken.Type == TokenTypes.Eos)
             {
-                ListSentence();
+                var sentencesNode = ListSentence();
             }
             else
             {
                 throw  new SyntaticException("Missing EOS",currentToken.Row, currentToken.Column);
             }
-            
+
+            return null;
         }
 
-        private void AssignValue()
+        private ExpressionNode AssignValue()
         {
-            ConsumeNextToken();
-            E();
+        ConsumeNextToken();
+          var exp =   E();
             if (currentToken.Type == TokenTypes.Eos)
             {
                 ConsumeNextToken();
-                return;
+                return exp;
             }
             else
             {
@@ -963,12 +1097,15 @@ namespace Mini_Compiler.Sintactico
             }
         }
 
-        private void OptonialId()
+        private List<IdNode> OptonialId( List<IdNode> list )
         {
            ConsumeNextToken();
             if (currentToken.Type == TokenTypes.Id)
             {
-                IdList();
+                list.Add(new IdNode {Value = currentToken.Lexeme});
+                return  IdList(list );
+
+
             }
             else
             {
@@ -978,22 +1115,27 @@ namespace Mini_Compiler.Sintactico
                
         }
         
-        private void IdList()
+        private List<IdNode> IdList(List<IdNode> list)
         {
+          
             ConsumeNextToken();
             if (currentToken.Type == TokenTypes.CommaOperator)
             {
-                OptonialId();
+
+              return  OptonialId(list);
             }
             else
             {
-                return;
+                return list;
+
             }
 
 
 
 
         }
+
+        
 
         public void ConsumeNextToken()
         {
@@ -1073,7 +1215,7 @@ namespace Mini_Compiler.Sintactico
 
         private ExpressionNode F() //id, num (E) Epsilon
         {
-            ConsumeNextToken();
+            
 
 
             
@@ -1163,6 +1305,16 @@ namespace Mini_Compiler.Sintactico
         }
     }
 
+  
+
+    internal class SentencesNode
+    {
+    }
+
+    internal class ListSentencesNode
+    {
+    }
+
     internal class GreaterOperationNode : BinaryOperatorNode
     {
     }
@@ -1187,11 +1339,6 @@ namespace Mini_Compiler.Sintactico
     {
     }
 
-    internal class IdNode : BinaryOperatorNode
-    {
-        public string Value { get; set; }
-    }
-
     internal class DivNode : BinaryOperatorNode
     {
     }
@@ -1211,10 +1358,6 @@ namespace Mini_Compiler.Sintactico
     }
 
     internal class AddNode : BinaryOperatorNode
-    {
-    }
-
-    internal class ExpressionNode
     {
     }
 

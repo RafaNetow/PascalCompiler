@@ -124,7 +124,7 @@ LISTAEXPR_OP -> , LISTAEXPR
 
 //////////////////////////////////////////////
 
-CASE -> case id of CASELIST
+CASE -> case expresion of CASELIST
 
 CASELIST -> CASELITERAL : BLOCK ; CASELIST
 					| ELSE ;
