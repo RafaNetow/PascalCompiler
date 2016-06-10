@@ -7,6 +7,7 @@ using System.Linq.Expressions;
 using System.Runtime.InteropServices;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Versioning;
+using System.Security;
 using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
@@ -59,7 +60,7 @@ namespace Mini_Compiler.Sintactico
             return listSentences;
         }
 
-        public Tree.SentencesNode ListSentence()
+        public SentencesNode ListSentence()
         {
             
                 if (CompareTokenType(TokenTypes.Html))
@@ -74,7 +75,7 @@ namespace Mini_Compiler.Sintactico
                 }
                 else if (CompareTokenType(TokenTypes.RwWhile))
                 {
-                    While();
+                   return While();
                 }
                 else if (CompareTokenType(TokenTypes.RwProcedure))
                 {
@@ -99,7 +100,19 @@ namespace Mini_Compiler.Sintactico
                 }
                 else if (CompareTokenType(TokenTypes.RwVar))
                 {
-                    return Declaration();
+                   var declaretionList =  Declaration();
+
+                    if (CompareTokenType(TokenTypes.Eos))
+                    {
+                        ConsumeNextToken();
+                    }
+                   else
+                    {
+                    throw new SyntaticException("Expeceted ;", currentToken.Row, currentToken.Column);
+                    }
+
+
+                return declaretionList;
 
                 }
                 else if (CompareTokenType(TokenTypes.RwIf))
@@ -266,26 +279,31 @@ namespace Mini_Compiler.Sintactico
 
         }
 
-        private void LoopBlock()
+        private List<SentencesNode> LoopBlock()
         {
-            
+            List<SentencesNode>listSentences = new List<SentencesNode>();
             if (CompareTokenType(TokenTypes.RwBegin))
             {
-                ConsumeNextToken();
-                LoopS();
+       
+              ConsumeNextToken();
                 //Podria controlarlo aqui
                 while(CompareTokenType(TokenTypes.RwEnd) == false)
                 {
-                   LoopS();
+                SentencesNode sentences = LoopS();
+                    listSentences.Add(sentences);
                 }
+                return listSentences;
             }
 
             else
             {
-                LoopS();
+               SentencesNode oneSentence =  LoopS();
+                listSentences.Add(oneSentence);
+                return listSentences;
             }
 
-            
+
+           
         }
 
         private SentencesNode Procedure()
@@ -884,20 +902,26 @@ namespace Mini_Compiler.Sintactico
 
         private SentencesNode While()
         {
-            E();
-
-            if(CompareTokenType(TokenTypes.Id))
             ConsumeNextToken();
+            var condition = E();
+
             if (CompareTokenType(TokenTypes.RwDo))
             {
                 ConsumeNextToken();
-                LoopBlock();
+              var sentenceList =   LoopBlock();
+              
                 if (CompareTokenType(TokenTypes.RwEnd))
                 {
                     ConsumeNextToken();
                     if (CompareTokenType(TokenTypes.Eos))
                     {
                         ConsumeNextToken();
+                        return  new WhileNode {Condition = condition,Sentences = sentenceList};
+
+                    }
+                    else
+                    {
+                        throw new SyntaticException("Expected eos", currentToken.Row, currentToken.Column);
                     }
                 }
             }
@@ -905,25 +929,26 @@ namespace Mini_Compiler.Sintactico
             return null;
         }
 
-        private void LoopS()
+        private SentencesNode LoopS()
         {
             
             if (CompareTokenType(TokenTypes.RwContinnue))
             {
-                return;
+                return null;
             }
             if (CompareTokenType(TokenTypes.RwBreak))
             {
-                return;
+                return null;
             }
 
             else if(CompareTokenType(TokenTypes.RwEnd))
             {
-                return;
+                return null;
             }
             else
             {
                 var sentencesNode = ListSentence();
+                return sentencesNode;
             }
         }
 
@@ -931,22 +956,17 @@ namespace Mini_Compiler.Sintactico
         {
             var trueBlock = new List<Tree.SentencesNode>();
             var falseBlock = new List<Tree.SentencesNode>();
+            ConsumeNextToken();
+            
             var expression =  E();
             if (currentToken.Type == TokenTypes.RwThen)
             {
 
                 var trueB = Block();
                 trueBlock.AddRange(trueB); 
-                if (CompareTokenType(TokenTypes.Html))
-                {
-                    return null;
-                }
+                
 
-                if (CompareTokenType(TokenTypes.Eos))
-                {
-                    ConsumeNextToken();
-
-                }
+                
               if (CompareTokenType(TokenTypes.RwElse))
                 {
                    falseBlock=  Else();
@@ -978,14 +998,21 @@ namespace Mini_Compiler.Sintactico
                 
                 if (CompareTokenType(TokenTypes.RwEnd))
                 {
-                    return new List<Tree.SentencesNode>();
+                    return listSentences;
                 }
 
             }
             var sentencesNode = ListSentence();
             //    listSentences.Add(sentencesNode);
-           // return listSentences ;
-            return null;
+            // return listSentences ;
+
+            List<SentencesNode> list  = new List<SentencesNode>();
+
+
+            if (sentencesNode != null)
+                list.Add(sentencesNode);
+            return list;
+            
         }
 
         private DeclarationNode Declaration()
@@ -1028,18 +1055,14 @@ namespace Mini_Compiler.Sintactico
                     ConsumeNextToken();
                     if (currentToken.Type == TokenTypes.Id)
                     {
-                        IdNode typeId = new IdNode {Value = currentToken.Lexeme};
                         ConsumeNextToken();
-                        if (currentToken.Type == TokenTypes.Eos)
-                        {
-                            ConsumeNextToken();
+                        IdNode typeId = new IdNode {Value = currentToken.Lexeme};
+                        
+  
                             return new DeclarationNode {Expression = false,TypeId = typeId,LIstIdNode = listId};
                            
-                        }
-                        else
-                        {
-                            throw  new SyntaticException("Expected EOS",currentToken.Row, currentToken.Column);
-                        }
+                       
+                        
                     }
 
                     
@@ -1088,7 +1111,7 @@ namespace Mini_Compiler.Sintactico
           var exp =   E();
             if (currentToken.Type == TokenTypes.Eos)
             {
-                ConsumeNextToken();
+               
                 return exp;
             }
             else
@@ -1147,10 +1170,9 @@ namespace Mini_Compiler.Sintactico
 
             var relational = RelationalExpression(expression);
 
-            if (relational != null)
-                return relational;
+           
 
-            return expression;
+            return relational;
         }
 
         private ExpressionNode Expression() //expression
@@ -1236,11 +1258,11 @@ namespace Mini_Compiler.Sintactico
             {
                 string id = currentToken.Lexeme;
                 currentToken = lexer.GetNextToken();
-                return new IdNode
-                {
-                    Value = id
+                return new IdNode {Value = id };
+                
+           
 
-                };
+        
             }
             else if (currentToken.Type == TokenTypes.SbLeftParent)
             {
@@ -1264,36 +1286,51 @@ namespace Mini_Compiler.Sintactico
         {
             if (CompareTokenType(TokenTypes.LessThanOp))
             {
-                var node = new LesserOperationNode() { LeftOperand = expresion, RightOperand = E() };
-                return node;
+                ConsumeNextToken();
+                var node = new LesserOperationNode() { LeftOperand = expresion, RightOperand = Expression() };
+                return RelationalExpression(node);
             }
             else if (CompareTokenType(TokenTypes.GreaterOp))
             {
-                var node = new GreaterOperationNode() { LeftOperand = expresion, RightOperand = E() };
-                return node;
+
+                ConsumeNextToken();
+                var node = new GreaterOperationNode() { LeftOperand = expresion, RightOperand = Expression() };
+                
+                return RelationalExpression(node);
             }
             else if (CompareTokenType(TokenTypes.LessThanOrEqualOp))
             {
-                var node = new LesserOrEqualOperationNode() { LeftOperand = expresion, RightOperand = E() };
-                return node;
+                ConsumeNextToken();
+                var node = new LesserOrEqualOperationNode() { LeftOperand = expresion, RightOperand = Expression() };
+                return RelationalExpression(node);
             }
             else if (CompareTokenType(TokenTypes.GreaterThanOrEqualOp))
             {
-                var node = new GreaterOrEqualOperationNode() { LeftOperand = expresion, RightOperand = E() };
-                return node;
+                ConsumeNextToken();
+                var node = new GreaterOrEqualOperationNode() { LeftOperand = expresion, RightOperand = Expression() };
+                return RelationalExpression(node);
             }
             else if (CompareTokenType(TokenTypes.UnequalOp))
             {
-                var node = new InequalityOperationNode() { LeftOperand = expresion, RightOperand = E() };
-                return node;
+                ConsumeNextToken();
+                var node = new InequalityOperationNode() { LeftOperand = expresion, RightOperand = Expression() };
+                return RelationalExpression(node);
             }
             else if (CompareTokenType(TokenTypes.EqualOp))
             {
-                var node = new EqualityOperationNode() { LeftOperand = expresion, RightOperand = E() };
-                return node;
+                ConsumeNextToken();
+                var node = new EqualityOperationNode() { LeftOperand = expresion, RightOperand = Expression() };
+                return RelationalExpression(node);
+            }
+            else if (CompareTokenType(TokenTypes.RwNot))
+            {
+                ConsumeNextToken();
+                var node = new NotNode() {LeftOperand = expresion, RightOperand = Expression()};
+                return RelationalExpression(node);
             }
 
-            return null;
+
+            return expresion;
 
         }
 
@@ -1305,11 +1342,10 @@ namespace Mini_Compiler.Sintactico
         }
     }
 
-  
-
-    internal class SentencesNode
+    internal class NotNode : BinaryOperatorNode
     {
     }
+
 
     internal class ListSentencesNode
     {

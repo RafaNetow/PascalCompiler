@@ -66,7 +66,7 @@ namespace Mini_Compiler.Lexer
             specialReservedWords.Add("Double", TokenTypes.RwDouble);
             specialReservedWords.Add("char", TokenTypes.RwChar);
             specialReservedWords.Add("integer", TokenTypes.RwInteger);
-            specialReservedWords.Add("not", TokenTypes.RwNot);
+           
             specialReservedWords.Add("xor", TokenTypes.RwXor);
             specialReservedWords.Add("shl", TokenTypes.RwShl);
             specialReservedWords.Add("shr", TokenTypes.RwShe);
@@ -81,6 +81,7 @@ namespace Mini_Compiler.Lexer
         }
         public void InitReservdWords()
         {
+            reserverdWords.Add("not", TokenTypes.RwNot);
             reserverdWords.Add("end", TokenTypes.RwEnd);  
             reserverdWords.Add("record",TokenTypes.RwRecord);   
             reserverdWords.Add("begin",TokenTypes.RwBegin);

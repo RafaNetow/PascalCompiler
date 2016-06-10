@@ -26,11 +26,14 @@ namespace Mini_Compiler.Tree
        public IdNode TypeId;
        public ExpressionNode ExpressionType;
        public bool Expression;
-
-
-
-
    }
+
+    public class WhileNode : SentencesNode
+    {
+        public ExpressionNode Condition;
+        public List<SentencesNode> Sentences;
+
+    }
 
 
 }
