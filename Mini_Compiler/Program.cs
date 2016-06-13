@@ -26,7 +26,7 @@ namespace Mini_Compiler
           var treeNodes =   parser.Parse();
             treeNodes.Reverse();
             Console.ReadKey();
-            Console.WriteLine("");
+            Console.WriteLine("errors no founds");
         }
 
     }
