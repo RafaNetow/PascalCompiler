@@ -79,11 +79,8 @@ namespace Mini_Compiler.Sintactico
                 else if (CompareTokenType(TokenTypes.RwProcedure))
                 {
                     ConsumeNextToken();
-                Procedure();
-                    if (CompareTokenType(TokenTypes.Eos))
-                    {
-                        ConsumeNextToken();
-                    }
+               return  Procedure();
+                   
                 }
 
                 else if (CompareTokenType(TokenTypes.RwConst))
@@ -351,10 +348,15 @@ namespace Mini_Compiler.Sintactico
              {
                  var nameOfProcedure = new IdNode {Value = currentToken.Lexeme};
                  ConsumeNextToken();
-               List<IdNode> paramsOfProcedure =  Params();
+               List<ParamsOfDeclaretion> paramsOfProcedure =  Params();
                 if (CompareTokenType(TokenTypes.Eos))
                 {
-                    FunctionBlock();
+                    ConsumeNextToken();
+                    var sentencesList =   FunctionBlock();
+
+
+
+                    return new ProcedureNode {NameOfProcedure = nameOfProcedure, Params = paramsOfProcedure,BlockProcedure = sentencesList};
                 }
                 else
                 {
@@ -371,57 +373,73 @@ namespace Mini_Compiler.Sintactico
 
         private List<SentencesNode> FunctionBlock()
         {
-            ConsumeNextToken();
+            List<SentencesNode> listSentencesOfBlock = new List<SentencesNode>();
             if (CompareTokenType(TokenTypes.RwBegin))
             {
                 ConsumeNextToken();
                 while (CompareTokenType(TokenTypes.RwEnd) == false)
                 {
                     var sentencesNode = ListSentence();
+                    listSentencesOfBlock.Add(sentencesNode);
                 }
                 ConsumeNextToken();
+                if (CompareTokenType(TokenTypes.Eos))
+                {
+                    ConsumeNextToken();
+                    return listSentencesOfBlock;
+                }
 
                
+            }
+            else
+            {
+                throw  new SyntaticException("Expected a Begin Token",currentToken.Row, currentToken.Column);
             }
 
 
             return null;
         }
 
-        private ParamsOfDeclaretion Params()
+        private List<ParamsOfDeclaretion> Params()
         {
             if (CompareTokenType(TokenTypes.SbLeftParent))
             {
                 ConsumeNextToken();
-              var ListOfParams =   DeclarationParam(new ParamsOfDeclaretion());
+              var listOfParams =   DeclarationParam(new List<ParamsOfDeclaretion>());
                 if (CompareTokenType(TokenTypes.SbRightParent))
                 {
                     ConsumeNextToken();
-                    return ListOfParams;
+                    return listOfParams;
+                }
+                else
+                {
+                    throw new SyntaticException("Expected a (", currentToken.Row, currentToken.Column);
                 }
             }
-            {
                 
-            }
-            return null;
+            else
+            {
+                throw new SyntaticException("Expected a )",currentToken.Row,currentToken.Column);
+            };
         }
 
         
 
-        public ParamsOfDeclaretion DeclarationParam(ParamsOfDeclaretion paramOfProcedure)
+        public List<ParamsOfDeclaretion> DeclarationParam(List<ParamsOfDeclaretion> paramsOfProcedure)
         {
-
+            ParamsOfDeclaretion param = new ParamsOfDeclaretion();
            
 
             if (CompareTokenType(TokenTypes.RwVar))
             {
+                param.IsDeclaretionVar = true;
                 ConsumeNextToken();
 
                 
                 if (CompareTokenType(TokenTypes.Id))
                 {
-                    paramOfProcedure.Variables.Add(new IdNode {Value = currentToken.Lexeme});
-                    IdList(paramOfProcedure.Variables);
+                    param.Variables.Add(new IdNode {Value = currentToken.Lexeme});
+                    IdList(param.Variables);
 
 
                 }
@@ -434,7 +452,8 @@ namespace Mini_Compiler.Sintactico
                     ConsumeNextToken();
                     if (CompareTokenType(TokenTypes.Id))
                     {
-                        paramOfProcedure.TypeV.Value = currentToken.Lexeme;
+                        param.TypeV.Value = currentToken.Lexeme;
+                        paramsOfProcedure.Add(param);
                         ConsumeNextToken();
                     }
                     else
@@ -451,17 +470,19 @@ namespace Mini_Compiler.Sintactico
                 }
                 if (CompareTokenType(TokenTypes.Eos))
                 {
-                    return DeclarationParam(paramOfProcedure);
+                    ConsumeNextToken();
+                    return DeclarationParam(paramsOfProcedure);
                 }
                 else
                 {
-                    return paramOfProcedure;
+                    return paramsOfProcedure;
                 }
 
             }
 
             else if (CompareTokenType(TokenTypes.Id))
             {
+                param.IsDeclaretionVar = false;
                 ConsumeNextToken();
                 if (CompareTokenType(TokenTypes.Declaretion))
                 {
@@ -469,6 +490,7 @@ namespace Mini_Compiler.Sintactico
 
                     if (CompareTokenType(TokenTypes.Id))
                     {
+                        param.TypeV.Value = currentToken.Lexeme;
                         ConsumeNextToken();
                     }
                     else
@@ -484,7 +506,7 @@ namespace Mini_Compiler.Sintactico
                 ConsumeNextToken();
                 if (CompareTokenType(TokenTypes.Eos))
                 {
-                    DeclarationParam(paramOfProcedure);
+                    DeclarationParam(paramsOfProcedure);
                 }
             }
             else

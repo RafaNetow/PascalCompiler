@@ -70,12 +70,12 @@ namespace Mini_Compiler.Tree
         public List<SentencesNode> ListSentences;
     }
 
-    public class procedureNode : SentencesNode
+    public class ProcedureNode : SentencesNode
     {
-        public IdNode nameOfProcedure;
-        public bool varDeclaretion;
-        public List<IdNode> firstId;
-        public IdNode secondId;
+        public IdNode NameOfProcedure;
+        public List<ParamsOfDeclaretion> Params;
+        public List<SentencesNode> BlockProcedure;
+
     }
 
 }

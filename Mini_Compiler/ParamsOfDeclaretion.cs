@@ -7,11 +7,12 @@ using Mini_Compiler.Sintactico;
 
 namespace Mini_Compiler
 {
-    class ParamsOfDeclaretion
+    public class ParamsOfDeclaretion
     {
-       public List<IdNode> Variables;
-       public IdNode TypeV;
+       public List<IdNode> Variables = new List<IdNode>();
+       public IdNode TypeV = new IdNode();
+       public bool IsDeclaretionVar;
 
-    
+
     }
 }

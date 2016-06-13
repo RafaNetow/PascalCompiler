@@ -54,6 +54,7 @@
     <Compile Include="Lexer\StringContent.cs" />
     <Compile Include="Lexer\Symbol.cs" />
     <Compile Include="Lexer\Token.cs" />
+    <Compile Include="ParamsOfDeclaretion.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SampleParser.cs" />
