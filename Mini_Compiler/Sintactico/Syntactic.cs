@@ -70,7 +70,7 @@ namespace Mini_Compiler.Sintactico
                 }
                 else if (CompareTokenType(TokenTypes.RwFunction))
                 {
-                    FunctionDecla();
+                    return FunctionDecla();
                 }
                 else if (CompareTokenType(TokenTypes.RwWhile))
                 {
@@ -174,31 +174,47 @@ namespace Mini_Compiler.Sintactico
         }
 
 
-        private void FunctionDecla()
+        private FunctionNode FunctionDecla()
         {
-            
+             FunctionNode functioN = new FunctionNode();
             ConsumeNextToken();
             if (CompareTokenType(TokenTypes.Id))
             {
-                Params();
+                functioN.NameOfFunction.Value = currentToken.Lexeme;
+                ConsumeNextToken();
+                functioN.Params = Params();
+            }
+            else
+            {
+                throw new SyntaticException("Expected some Id",currentToken.Row, currentToken.Column);
             }
 
-            if (CompareTokenType(TokenTypes.AsiggnationOp))
+            if (CompareTokenType(TokenTypes.Declaretion))
             {
                 ConsumeNextToken();
 
                 if (CompareTokenType(TokenTypes.Id))
                 {
-                 ConsumeNextToken();
+                    functioN.TypeOfReturn.Value = currentToken.Lexeme;
+                    ConsumeNextToken();
                     if (CompareTokenType(TokenTypes.Eos))
                     {
-                        FunctionBlock();
+                        ConsumeNextToken();
+                        functioN.BlockFunction = FunctionBlock();
+
+                        return functioN;
+
                     }
                     else
                     {
-                        throw new SyntaticException("Expected ;",currentToken.Row,currentToken.Column);
-                    }   
+                        throw new SyntaticException("Expected ;", currentToken.Row, currentToken.Column);
+                    }
                 }
+                else
+                {
+                    throw new SyntaticException("Expected some id", currentToken.Row, currentToken.Column);
+                }
+              
             }
             else
             {
@@ -483,6 +499,7 @@ namespace Mini_Compiler.Sintactico
             else if (CompareTokenType(TokenTypes.Id))
             {
                 param.IsDeclaretionVar = false;
+                param.Variables.Add(new IdNode { Value = currentToken.Lexeme });
                 ConsumeNextToken();
                 if (CompareTokenType(TokenTypes.Declaretion))
                 {
@@ -492,6 +509,7 @@ namespace Mini_Compiler.Sintactico
                     {
                         param.TypeV.Value = currentToken.Lexeme;
                         ConsumeNextToken();
+                        paramsOfProcedure.Add(param);
                     }
                     else
                     {
@@ -506,7 +524,14 @@ namespace Mini_Compiler.Sintactico
                 ConsumeNextToken();
                 if (CompareTokenType(TokenTypes.Eos))
                 {
+                    ConsumeNextToken();
+                
                     DeclarationParam(paramsOfProcedure);
+                }
+                else
+                {
+                    
+                    return paramsOfProcedure;
                 }
             }
             else

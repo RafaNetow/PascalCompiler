@@ -78,4 +78,13 @@ namespace Mini_Compiler.Tree
 
     }
 
+    public class FunctionNode : SentencesNode
+    {
+        public IdNode NameOfFunction  = new IdNode();
+        public List<ParamsOfDeclaretion> Params = new List<ParamsOfDeclaretion>();
+        public List<SentencesNode> BlockFunction = new List<SentencesNode>();
+        public IdNode TypeOfReturn = new IdNode();
+    }
+
+
 }

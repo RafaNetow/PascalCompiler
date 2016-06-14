@@ -25,8 +25,9 @@ namespace Mini_Compiler
             Syntactic parser = new Syntactic(new Lexer.Lexer(new StringContent(pascalCode.ToLower())));
           var treeNodes =   parser.Parse();
             treeNodes.Reverse();
-            Console.ReadKey();
             Console.WriteLine("errors no founds");
+            Console.ReadKey();
+            
         }
 
     }
