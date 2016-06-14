@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using Microsoft.SqlServer.Server;
 using Mini_Compiler.Lexer;
 using Mini_Compiler.Tree;
+using Mini_Compiler.Tree.CaseNode;
 
 namespace Mini_Compiler.Sintactico
 {
@@ -85,15 +86,8 @@ namespace Mini_Compiler.Sintactico
 
                 else if (CompareTokenType(TokenTypes.RwConst))
                 {
-                    Const();
-                    if (CompareTokenType(TokenTypes.Eos))
-                    {
-                        ConsumeNextToken();
-                    }
-                    else
-                    {
-                        throw new SyntaticException("Expeceted ;", currentToken.Row, currentToken.Column);
-                    }
+                        return Const();
+                   
                 }
                 else if (CompareTokenType(TokenTypes.RwVar))
                 {
@@ -147,7 +141,8 @@ namespace Mini_Compiler.Sintactico
                 }
                 else if (CompareTokenType(TokenTypes.RwCase))
                 {
-                    Case();
+                ConsumeNextToken();
+               return Case();
                 }
                 else if (CompareTokenType(TokenTypes.RwFor))
                 {
@@ -542,27 +537,50 @@ namespace Mini_Compiler.Sintactico
             return null;
         }
 
-        private void ConstDeclaretion()
+        private ConstNode ConstDeclaretion()
         {
            
-      
+            ConstNode currentConst = new ConstNode();
+            ConsumeNextToken();
+            if (CompareTokenType(TokenTypes.Id))
+            {
+                currentConst.ConstName.Value = currentToken.Lexeme;
+            }
+            else
+            {
+                throw new SyntaticException("Expected id", currentToken.Row, currentToken.Column);
+            }
+
             ConsumeNextToken();
             if (CompareTokenType(TokenTypes.EqualOp))
             {
-                E();
+                currentConst.ExpressionConst= E();
+                return currentConst;
+
             }
             else if (CompareTokenType(TokenTypes.Declaretion))
             {
                 ConsumeNextToken();
                 if (CompareTokenType(TokenTypes.Id))
                 {
+                    currentConst.TypeOfConst.Value = currentToken.Lexeme;
                     ConsumeNextToken();
+
                     if (CompareTokenType(TokenTypes.EqualOp))
                     {
-                        E();
+                        currentConst.ExpressionConst = E();
+
+                        return currentConst;
+                    }
+                    else
+                    {
+                        throw new SyntaticException("Unexpected symbom", currentToken.Row, currentToken.Column);
                     }
                 }
-
+                else
+                {
+                    throw new SyntaticException("Unexpected symbom", currentToken.Row, currentToken.Column);
+                }
 
             }
             else
@@ -570,19 +588,19 @@ namespace Mini_Compiler.Sintactico
                 throw new SyntaticException("Unexpected symbom", currentToken.Row, currentToken.Column);
             }
 
+          
         }
 
-        private void Const()
+        private SentencesNode Const()
         {
+           var Cdeclaretion =  ConstDeclaretion();
             ConsumeNextToken();
-            if (CompareTokenType(TokenTypes.Id))
+            if (CompareTokenType(TokenTypes.Eos))
             {
-                ConstDeclaretion();
+                ConsumeNextToken();
             }
-            else
-            {
-                throw new SyntaticException("Expected id", currentToken.Row, currentToken.Column);
-            }
+            return Cdeclaretion;
+
 
         }
 
@@ -884,11 +902,34 @@ namespace Mini_Compiler.Sintactico
             }
         }
 
-        private void Case()
+        private SentencesNode Case()
         {
-        
 
-        ConsumeNextToken();
+            if (CompareTokenType(TokenTypes.Id))
+            {
+                var caseLexeme = currentToken.Lexeme;
+                ConsumeNextToken();
+                var accesList = new List<AccesorNode>();
+                IndexingAndAccess(accesList);
+                if (CompareTokenType(TokenTypes.RwOf))
+                {
+                    ConsumeNextToken();
+                    var caseList = new List<CaseStatement>();
+                    caseList = CaseList(caseList);
+                    if (CompareTokenType(TokenTypes.RwEnd))
+                    {
+                        ConsumeNextToken();
+                        return new CaseNode {Id};
+                    }
+                    // var caseList = new List<Cas>
+
+                }
+            }
+            else
+            {
+                throw new SyntaticException("Unexpected Token",currentToken.Row,currentToken.Column);
+            }
+      
             E();
            
                 ConsumeNextToken();
@@ -896,9 +937,91 @@ namespace Mini_Compiler.Sintactico
                 {
                     CaseList();
                 }
-            
-            
-           
+
+
+            return null;
+        }
+
+        private List<AccesorNode> IndexingAndAccess(List<AccesorNode> aList)
+        {
+            if (CompareTokenType(TokenTypes.SbLeftParent))
+            {
+                 ConsumeNextToken();
+                var expression = E();
+                if (CompareTokenType(TokenTypes.SbRightParent))
+                {
+                    ConsumeNextToken();
+                    IndexingAndAccess(aList);
+
+                }
+                else
+                {
+                    throw  new SyntaticException("Unexpected Token",currentToken.Row,currentToken.Row);
+
+                }
+            }else if (CompareTokenType(TokenTypes.AccesOp))
+            {
+                ConsumeNextToken();
+                if (CompareTokenType(TokenTypes.Id))
+                {
+                    var idName = new IdNode {Value = currentToken.Lexeme};
+                    ConsumeNextToken();
+                    IndexingAndAccess();
+                }
+                else
+                {
+                    throw new SyntaticException("Unexpected Token", currentToken.Row,currentToken.Column);
+
+                }
+                    
+            }
+
+
+
+
+            // if(currentToken.)
+
+            /*
+            if (_currentToken.Type == TokenType.TK_LEFTBRACKET)
+            {
+                _currentToken = _lexer.GetNextToken();
+                var expr = PascalExpression();
+                if (_currentToken.Type == TokenType.TK_RIGHTBRACKET)
+                {
+                    _currentToken = _lexer.GetNextToken();
+                    accessorList.Insert(0, new IndexAccesorNode { IndexExpression = expr });
+                    accessorList = IndexingAndAccess(accessorList);
+                    return accessorList;
+                }
+                else
+                {
+                    throw new SyntaxException($"Unexpected Token: {_currentToken.Lexeme} Expected: ']' at Column: {_currentToken.Column} Row: {_currentToken.Row}");
+                }
+            }
+            else if (_currentToken.Type == TokenType.TK_ACCESS)
+            {
+                _currentToken = _lexer.GetNextToken();
+                if (_currentToken.Type == TokenType.ID)
+                {
+                    var idNode = new IdNode { Value = _currentToken.Lexeme };
+                    _currentToken = _lexer.GetNextToken();
+                    accessorList.Insert(0, new PropertyAccesorNode() { IdNode = idNode });
+                    accessorList = IndexingAndAccess(accessorList);
+                    return accessorList;
+                }
+                else
+                {
+                    throw new SyntaxException(
+                        $"Unexpected Token: {_currentToken.Lexeme} Expected: '[' at Column: {_currentToken.Column} Row: {_currentToken.Row}");
+                }
+            }
+
+            return accessorList;
+        }
+
+    }
+*/
+            return null;
         }
 
         private void ListChar()
@@ -926,18 +1049,24 @@ namespace Mini_Compiler.Sintactico
 
         }
 
-        private void CaseList()
+        private List<CaseStatement> CaseList(List<CaseStatement> caseList )
         {
 
             if (CompareTokenType(TokenTypes.RwElse))
             {
-                Else();
+                ConsumeNextToken();
+              var sentesList =  Else();
+                return caseList;
             }
 
-           else 
-            {
-                CaseLiteral();
-            }
+          else if (CompareTokenType(TokenTypes.NumericLiteral))
+          {
+              var cliteral = CaseLiteral();
+                if(CompareTokenType())
+          }
+
+
+            return caseList;
         }
 
         private void CaseLiteral()

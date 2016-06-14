@@ -86,5 +86,12 @@ namespace Mini_Compiler.Tree
         public IdNode TypeOfReturn = new IdNode();
     }
 
+    public class ConstNode : SentencesNode
+    {
+        public IdNode ConstName = new IdNode();
+        public IdNode TypeOfConst = new IdNode();
+        public ExpressionNode ExpressionConst = new IdNode();
+    }
+
 
 }

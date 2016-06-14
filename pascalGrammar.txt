@@ -1,4 +1,4 @@
-PROGRAM -> <HTML> BODYHTML <HTML> $
+ PROGRAM -> <HTML> BODYHTML </HTML> $
           
 BODYHTML -> BLOCKHTML BODYHTML'
 
@@ -14,34 +14,39 @@ LS -> S LS
 LS_LOOP -> LoopS LS_LOOP
    			| Ep
    
-S -> Declaracion ;    //falta la produccion de variables constantes
-		| IF ;
+S -> Declaracion ;    
+   | IF ;
    | PREFOR ;
    | WHILE ;
    | REPEAT ;
-   | CASE 
+   | CONST ;
+   | CASE ;
    | DeclareType ;
    | FUNCTIONDECL ;
    | PROCEDUREDECL ;
    | PREID
 
+CONST -> const id ConstDecl
+
+ConstDecl -> = EXPRESION
+            | : id = EXPRESION
+
+/////////////////////////////////////////////////////
 LoopS -> S
        | continue ;
        | break ;
-   
+/////////////////////////////////////////////////////   
 PREID -> Id IdBody
 
 IdBody -> LLAMRFUNCIONSENTENCIA ;
-   			| AsignarValor ;
+        | := EXPRESION ;
 
-// originalmente teniamos    Declaracion -> var ListaId : id AsignarValor  //lo manejamos como tipo luego
+//////////////////////////////////////////////////////
 
-Declaracion -> var FactorComunId 
+Declaracion -> var id DeclarationTail
 
-FactorComunId	->	 id Y
-
-Y ->  IdOpcional : id     //Lista de ids no puede ser inicializado, id es un tipo
-	| 	: id AsignarValor   //id es un tipo
+DeclarationTail ->  IdOpcional : id     //Lista de ids no puede ser inicializado, id es un tipo
+								| 	: id AsignarValor   //id es un tipo
             
 ListaId -> id IdOpcional
 
@@ -50,7 +55,7 @@ IdOpcional -> , ListaId
 
 AsignarValor -> = EXPRESION
  							| Ep
-
+//////////////////////////////////////////////////////
 DeclareType -> type id = TYPE 
 
 TYPE -> EnumeratedType 
@@ -62,15 +67,13 @@ EnumeratedType -> ( ListaId )
                   
 TypeDef -> id
 
-Record -> record ListaPropiedades end ;
+/-------------------------------------------------------------------/
+Record -> record f end ;
 
-ListaPropiedades -> id : RecordType 
+ListaPropiedades -> ListaId : TYPE ; ListaPropiedades
 										| Ep
                     
-RecordType -> EnumeratedType ;
-							| id ;
-              | Record
-              
+/------------------------------------------------------------------/        
 Array -> array [ ListaRangos ] of ArrayTypes
 
 ArrayTypes -> id
@@ -82,12 +85,10 @@ ListaRangos -> Rango ListaRangosOp
 ListaRangosOp -> , ListaRangos
 								| Ep
                 
-Rango -> id
-      | Subrange
-      
-SubRange -> expresion OpRange expresion //expresion debe ser del mismo tipo y constantes
+Rango -> | lit_num .. lit_num
+        | lit_char .. lit_char
 
-IF -> if EXPRESION Then BlOCK ELSE
+IF -> if EXPRESION then BlOCK ELSE
 
 BlOCK -> S
        | Begin LS End 
@@ -100,14 +101,14 @@ PREFOR -> for id ForBody
 ForBody -> FOR
 					| FORIN
         
-FOR -> := EXPRESION to Expresion do LOOPBLOCK
+FOR -> := EXPRESION to EXPRESION do LOOPBLOCK
 
 FORIN ->	in id do LOOPBLOCK
 
 WHILE -> while EXPRESION do LOOPBLOCK
 
 LOOPBLOCK -> LoopS
-					|Begin LS_LOOP End
+					|Begin LS_LOOP End ;
           
 REPEAT -> repeat LS_LOOP until EXPRESION
 ---------------------------------------
@@ -124,28 +125,15 @@ LISTAEXPR_OP -> , LISTAEXPR
 
 //////////////////////////////////////////////
 
-CASE -> case expresion of CASELIST
+CASE -> case id index_access of CASELIST end
 
 CASELIST -> CASELITERAL : BLOCK ; CASELIST
-					| ELSE ;
+					| ELSE BLOCK 
           | Ep
           
-CASELITERAL -> ListaNum
-					| ListaChar
-          | ListaId //solo si son const [semantico]
-          | SubRange 
-          
-ListaNum -> lit_num NumOpcional
-
-NumOpcional -> , ListaNum
-	 					| Ep
-
-ListaChar -> lit_char CharOpcional
-
-CharOpcional -> , ListaChar
-	 					| Ep
-
-
+CASELITERAL ->  ListaRangos //1+100..4+100, 100+6..100+7 : s := 'lowercase letter (a-z)';
+          | LISTAEXPR //400+2, 400+3, 1000 div 5: s := 'fuck';
+  
 PROCEDUREDECL -> procedure id PARAMS ; FUNCTIONBlOCK 
 
 FUNCTIONDECL -> function id PARAMS : id ; FUNCTIONBlOCK
@@ -157,11 +145,16 @@ FUNCTIONBlOCK -> Begin LS End
 LISTADECL -> DECLPARAM EXTRADECL
 					| Ep
 
-EXTRADECL -> , LISTADECL
+EXTRADECL -> ; LISTADECL
 					| Ep
           
-DECLPARAM -> id : id  
+DECLPARAM -> ListaId : id  
 					| var ListaId : id
+
+ListaId -> id IdOpcional
+
+IdOpcional -> , ListaId
+	 					| Ep
 
 //LE EXPRESSION***
 
@@ -185,13 +178,20 @@ ExpresionMul' -> OpMul ExpresionUnary ExpresionMul'
 ExpresionUnary -> not Factor
 						| Factor
           
-Factor ->   id
+Factor ->   id X 
           | lit_num
           | lit_string
           | lit_char
           | lit_boolean
-          | LLAMARFUNCION
+          | lit_real
           | ( EXPRESION )
+
+X -> LLAMRFUNCIONSENTENCIA
+		| index_access
+
+index_access -> [EXPRESSION] index_access
+								| . id index_access
+                | Ep
 
 OpRelational -> <
 							| >
