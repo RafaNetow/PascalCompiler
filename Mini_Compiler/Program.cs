@@ -17,16 +17,34 @@ namespace Mini_Compiler
           
             HandlerFiles handlFile = new HandlerFiles();
             string pascalCode = handlFile.getCode();
-            
+
             //Declaraciones
 
 
 
-            Syntactic parser = new Syntactic(new Lexer.Lexer(new StringContent(pascalCode.ToLower())));
-          var treeNodes =   parser.Parse();
-            treeNodes.Reverse();
-            Console.WriteLine("errors no founds");
-            Console.ReadKey();
+              Syntactic parser = new Syntactic(new Lexer.Lexer(new StringContent(pascalCode.ToLower())));
+
+            
+            try
+            {
+                var treeNodes = parser.Parse();
+                foreach (var sentencesNode in treeNodes)
+                {
+                    sentencesNode.ValidateSemantic();
+                }
+                Console.WriteLine("errors no founds");
+                Console.ReadKey();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                Console.WriteLine(e.StackTrace);
+                Console.ReadKey();
+            }
+            
+            
+        
+           
             
         }
 

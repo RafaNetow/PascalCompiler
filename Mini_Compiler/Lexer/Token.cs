@@ -83,7 +83,11 @@
         char_literal,
         RwRecord,
         array,
-        RwArray
+        RwArray,
+        RealLiteral,
+        RwStruct,
+        RwFalse,
+        RwTrue
     }
 
     public class Token

@@ -282,6 +282,15 @@ namespace Mini_Compiler.Lexer
                             _currentSymbol = Content.nextSymbol();
                         }
 
+                       else if (_currentSymbol.CurrentSymbol == '.')
+                       {
+                            state = 15;
+                            tokenColumn = _currentSymbol.Column;
+                            tokenRow = _currentSymbol.Row;
+                            lexeme += _currentSymbol.CurrentSymbol;
+                            _currentSymbol = Content.nextSymbol();
+                        }
+
                         else
                         {
                             throw new LexicalException($"Symbol {_currentSymbol.CurrentSymbol} not recognized at Row:{_currentSymbol.Row} Col: {_currentSymbol.Column}");
@@ -308,7 +317,7 @@ namespace Mini_Compiler.Lexer
                         else
 
                         {
-
+                             
                             return new Token { Type = TokenTypes.Id, Lexeme = lexeme, Column = tokenColumn, Row = tokenRow };
                         }
                         break;
@@ -340,6 +349,11 @@ namespace Mini_Compiler.Lexer
                         {
                             lexeme += _currentSymbol.CurrentSymbol;
                             _currentSymbol = Content.nextSymbol();
+                            if (lexeme.Length == 3)
+                            {
+                                return new Token { Type = TokenTypes.char_literal, Lexeme = lexeme, Column = tokenColumn, Row = tokenRow };
+                            }
+
                             return new Token { Type = TokenTypes.StringLiteral, Lexeme = lexeme, Column = tokenColumn, Row = tokenRow };
                         }
                         break;
@@ -372,17 +386,34 @@ namespace Mini_Compiler.Lexer
                  
 
                     case 5:
-                        if ( rw.specialSymbols.Contains(_currentSymbol.CurrentSymbol))
+
+                         
+                        if ( rw.specialSymbols.Contains(lexeme[0]))
                         {
                             lexeme += _currentSymbol.CurrentSymbol;
                             _currentSymbol = Content.nextSymbol();
-                            return new Token
+
+
+                            if (rw.operators.ContainsKey(lexeme))
                             {
-                                Type = rw.operators[lexeme],
-                                Lexeme = lexeme,
-                                Column = tokenColumn,
-                                Row = tokenRow
-                            };
+                                return new Token
+                                {
+                                    Type = rw.operators[lexeme],
+                                    Lexeme = lexeme,
+                                    Column = tokenColumn,
+                                    Row = tokenRow
+                                };
+                            }
+                            else
+                            {
+                                return new Token
+                                {
+                                    Type = rw.operators[lexeme[0].ToString()],
+                                    Lexeme = lexeme[0].ToString(),
+                                    Column = tokenColumn,
+                                    Row = tokenRow
+                                };
+                            }
                         }
                         else
                         {
@@ -447,7 +478,7 @@ namespace Mini_Compiler.Lexer
                         }
                         else
                         {
-                            return new Token { Type = TokenTypes.NumericLiteral, Lexeme = lexeme, Column = tokenColumn, Row = tokenRow };
+                            return new Token { Type = TokenTypes.RealLiteral, Lexeme = lexeme, Column = tokenColumn, Row = tokenRow };
                         }
 
                         break;
@@ -530,12 +561,29 @@ namespace Mini_Compiler.Lexer
                             return new Token {Lexeme = lexeme,Column = tokenColumn, Row = tokenRow, Type = TokenTypes.char_literal};
                         }
 
+                    case 15:
+                        if (_currentSymbol.CurrentSymbol == '.')
+                        {
+                            lexeme += _currentSymbol.CurrentSymbol;
+                            _currentSymbol = Content.nextSymbol();
+                            return new Token { Lexeme = lexeme, Column = tokenColumn, Row = tokenRow, Type = TokenTypes.RangeOp };
+                        }
+                        else if (Char.IsDigit((_currentSymbol.CurrentSymbol)))
+                        {
+                            lexeme += _currentSymbol.CurrentSymbol;
+                            _currentSymbol = Content.nextSymbol();
+                            state = 9;
+
+                        }
+                        else
+                        {
+                            return new Token { Lexeme = lexeme, Column = tokenColumn, Row = tokenRow, Type = TokenTypes.AccesOp };
+                        }
 
 
-                            break;
 
 
-
+                        break;
 
                 }
             }

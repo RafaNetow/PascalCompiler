@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Mini_Compiler.Tree.CaseNode
+namespace Mini_Compiler.Sintactico
 {
-    class CaseStatement
+   public class Range
     {
-        public List<SentencesNode> Statements { get; set; }
-    
+        public ExpressionNode Infe;
+        public ExpressionNode Super;
     }
 }

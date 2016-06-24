@@ -22,7 +22,7 @@ namespace Mini_Compiler.Lexer
             InitOperatorsDictionary();
             InitReservdWords();
             InitSpecialOperator();
-        }
+        } 
 
 
        public void InitOperatorsDictionary()
@@ -38,10 +38,8 @@ namespace Mini_Compiler.Lexer
             operators.Add("<", TokenTypes.LessThanOp);
             operators.Add(">=",TokenTypes.GreaterThanOrEqualOp);
             operators.Add("<=",TokenTypes.LessThanOrEqualOp);
-            operators.Add(":=", TokenTypes.AsiggnationOp);
+            operators.Add(":=", TokenTypes.AsiggnationOp); 
             operators.Add(";",TokenTypes.Eos);
-            operators.Add(".", TokenTypes.AccesOp);
-            operators.Add("..", TokenTypes.RangeOp);
             operators.Add("[",TokenTypes.OpenBracketOperator);
             operators.Add("]",TokenTypes.CloseBracketOperator);
             operators.Add(",",TokenTypes.CommaOperator);
@@ -108,6 +106,9 @@ namespace Mini_Compiler.Lexer
             reserverdWords.Add("repeat",TokenTypes.RwRepeat);
             reserverdWords.Add("array", TokenTypes.RwArray);
             reserverdWords.Add("const", TokenTypes.RwConst);
+            reserverdWords.Add("struct", TokenTypes.RwStruct);
+            reserverdWords.Add("true", TokenTypes.RwTrue);
+            reserverdWords.Add("false", TokenTypes.RwFalse);
 
 
 

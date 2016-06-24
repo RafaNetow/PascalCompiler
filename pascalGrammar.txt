@@ -26,7 +26,7 @@ S -> Declaracion ;
    | PROCEDUREDECL ;
    | PREID
 
-CONST -> const id ConstDecl
+CONST -> const id ConstDecl	
 
 ConstDecl -> = EXPRESION
             | : id = EXPRESION

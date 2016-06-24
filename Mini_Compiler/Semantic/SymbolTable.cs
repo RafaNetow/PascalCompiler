@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Mini_Compiler.Semantic.Types;
+using Mini_Compiler.Sintactico;
 
 namespace Mini_Compiler.Semantic
 {
@@ -31,7 +32,7 @@ namespace Mini_Compiler.Semantic
             }
 
             if (TypesTable.Instance.Contains(name))
-                throw new SemanticException($"  :{name} iz a taippp.");
+                throw new SemanticException($"  :{name} is a type.");
 
             _table.Add(name, TypesTable.Instance.GetType(typeName));
         }
@@ -47,7 +48,7 @@ namespace Mini_Compiler.Semantic
         }
 
 
-        public void DeclareVariable(string value, string typeName, List<int> dimensions)
+        public void DeclareVariable(string value, string typeName, List<Range> dimensions)
         {
             if (dimensions.Count == 0)
             {
@@ -73,15 +74,51 @@ namespace Mini_Compiler.Semantic
 
                 _table.Add(value, type);
             }
+
+        }
+
+        public void DeclareVariable(string value, BaseType typeName, List<Range> dimensions)
+        {
+            
+                var type = TypesTable.Instance.GetType(value);
+                dimensions.Reverse(0, dimensions.Count);
+                foreach (var dimension in dimensions)
+                {
+
+                    type = new ArrayType(dimension, type);
+
+                }
+                if (_table.ContainsKey(value))
+                {
+                    throw new SemanticException($"Variable  :{value} exists.");
+                }
+
+                if (TypesTable.Instance.Contains(value))
+                    throw new SemanticException($"  :{value} is a type.");
+
+                _table.Add(value, type);
+            }
+
+        public void DeclareVariable(string name, BaseType type)
+        {
+            if (_table.ContainsKey(name))
+            {
+                throw new SemanticException($"Variable  :{name} exists.");
+            }
+
+            if (TypesTable.Instance.Contains(name))
+                throw new SemanticException($"  :{name} iz a taippp.");
+
+            _table.Add(name, type);
         }
     }
 
     public class ArrayType : BaseType
     {
-        public int Dimension { get; set; }
+        public Range Dimension { get; set; }
         public BaseType Type { get; set; }
 
-        public ArrayType(int dimension, BaseType type)
+        public ArrayType(Range dimension, BaseType type)
         {
             Dimension = dimension;
             Type = type;

@@ -5,10 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Mini_Compiler.Semantic.Types;
 
-namespace Mini_Compiler.Tree
+namespace Mini_Compiler.Tree.CaseNode
 {
-   public  abstract class AccesorNode
-   {
-       public abstract BaseType Validate(BaseType type);
-   }
+    class CaseNonDefualtStatement : CaseStatement
+    {
+        public CaseLiteral Literals;
+       
+    }
 }

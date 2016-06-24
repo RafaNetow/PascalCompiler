@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Mini_Compiler.Semantic.Types;
+using Mini_Compiler.Tree;
 
 namespace Mini_Compiler.Semantic
 {
@@ -14,8 +16,14 @@ namespace Mini_Compiler.Semantic
         private TypesTable()
         {
             _table = new Dictionary<string, BaseType>();
-            _table.Add("int", new IntType());
+            _table.Add("integer", new IntType());
             _table.Add("string", new StringType());
+            _table.Add("real ", new RealType());
+            _table.Add("char", new CharType());
+            _table.Add("boolean",new BooleanType());
+            _table.Add("Const", new ConstType());
+            //_table.Add("function", new FunctionType());
+            
         }
 
 
@@ -48,6 +56,9 @@ namespace Mini_Compiler.Semantic
             return _table.ContainsKey(name);
         }
     }
+
+    
+
 
     internal class SemanticException : Exception
     {

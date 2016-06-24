@@ -54,22 +54,82 @@
     <Compile Include="Lexer\StringContent.cs" />
     <Compile Include="Lexer\Symbol.cs" />
     <Compile Include="Lexer\Token.cs" />
+    <Compile Include="obj\Debug\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
+    <Compile Include="obj\Debug\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
+    <Compile Include="obj\Debug\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />
     <Compile Include="ParamsOfDeclaretion.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SampleParser.cs" />
     <Compile Include="SampleParserBinaryToFloat.cs" />
+    <Compile Include="Semantic\parameterFunction.cs" />
+    <Compile Include="Semantic\SymbolTable.cs" />
+    <Compile Include="Semantic\TypesTable.cs" />
+    <Compile Include="Semantic\Types\BaseType.cs" />
+    <Compile Include="Semantic\Types\CharType.cs" />
+    <Compile Include="Semantic\Types\ConstType.cs" />
+    <Compile Include="Semantic\Types\FunctionType.cs" />
+    <Compile Include="Semantic\Types\IntType.cs" />
+    <Compile Include="Semantic\Types\RealType.cs" />
+    <Compile Include="Semantic\Types\StringType.cs" />
     <Compile Include="Sintactico\BinaryOperatorNode.cs" />
+    <Compile Include="Sintactico\CallFunctionNode.cs" />
     <Compile Include="Sintactico\ExpressionNode.cs" />
     <Compile Include="Sintactico\IdNode.cs" />
+    <Compile Include="Sintactico\Range.cs" />
     <Compile Include="Sintactico\Syntactic.cs" />
-    <Compile Include="Tree\Nodes.cs" />
+    <Compile Include="Tree\AccesorNode.cs" />
+    <Compile Include="Semantic\Types\BooleanType.cs" />
+    <Compile Include="Tree\BooleanNode\BooleanNode.cs" />
+    <Compile Include="Tree\Conditions\CaseNode\CaseDefaultStatement.cs" />
+    <Compile Include="Tree\Conditions\CaseNode\CaseLiteral.cs" />
+    <Compile Include="Tree\Conditions\CaseNode\CaseLiteralList.cs" />
+    <Compile Include="Tree\Conditions\CaseNode\CaseLiteralRange.cs" />
+    <Compile Include="Tree\Conditions\CaseNode\CaseNode.cs" />
+    <Compile Include="Tree\Conditions\CaseNode\CaseNonDefualtStatement.cs" />
+    <Compile Include="Tree\Conditions\CaseNode\CaseStatement.cs" />
+    <Compile Include="Tree\Const\ConstNode.cs" />
+    <Compile Include="Tree\DeclarationNode.cs" />
+    <Compile Include="Tree\Bucles\ForInNode.cs" />
+    <Compile Include="Tree\Bucles\ForNode.cs" />
+    <Compile Include="Tree\Declaretion\ArrayTypes\ArrayTypeArray.cs" />
+    <Compile Include="Tree\Declaretion\ArrayTypes\ArrayTypeId.cs" />
+    <Compile Include="Tree\Declaretion\ArrayTypes\ArrayTypeRange.cs" />
+    <Compile Include="Tree\Declaretion\RecordNode.cs" />
+    <Compile Include="Tree\Declaretion\RecordProperties.cs" />
+    <Compile Include="Tree\Declaretion\TypeArrayNode.cs" />
+    <Compile Include="Tree\Declaretion\TypeDeclaretionNode.cs" />
+    <Compile Include="Tree\Declaretion\TypeIdNode.cs" />
+    <Compile Include="Tree\FunctionNode.cs" />
+    <Compile Include="Tree\Conditions\IfNode.cs" />
+    <Compile Include="Tree\IndexAccesorNode.cs" />
+    <Compile Include="Tree\SentencesNode.cs" />
+    <Compile Include="Tree\PreIdNode.cs" />
+    <Compile Include="Tree\ProcedureNode.cs" />
+    <Compile Include="Tree\PropertyAccesorNode.cs" />
+    <Compile Include="Tree\Bucles\RepeatNode.cs" />
+    <Compile Include="Tree\Bucles\WhileNode.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="bin\Debug\Mini_Compiler.vshost.exe.config" />
+    <None Include="bin\Debug\Mini_Compiler.vshost.exe.manifest" />
     <None Include="Lexer\App.config" />
+    <None Include="obj\Debug\DesignTimeResolveAssemblyReferences.cache" />
+    <None Include="obj\Debug\DesignTimeResolveAssemblyReferencesInput.cache" />
+    <None Include="obj\Debug\Mini_Compiler.csprojResolveAssemblyReference.cache" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="bin\Release\" />
+    <Folder Include="obj\Debug\TempPE\" />
+    <Folder Include="Test\" />
+    <Folder Include="Tree\Relacionales\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="bin\Debug\Mini_Compiler.vshost.exe" />
+    <Content Include="bin\Debug\PascalCode.txt" />
+    <Content Include="obj\Debug\Mini_Compiler.csproj.FileListAbsolute.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

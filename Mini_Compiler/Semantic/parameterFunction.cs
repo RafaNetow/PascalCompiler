@@ -5,10 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Mini_Compiler.Semantic.Types;
 
-namespace Mini_Compiler.Tree
+namespace Mini_Compiler.Semantic
 {
-   public  abstract class AccesorNode
-   {
-       public abstract BaseType Validate(BaseType type);
-   }
+    public class ParameterFunction
+    {
+        public BaseType Type;
+        public bool IsVar;
+    }
 }
