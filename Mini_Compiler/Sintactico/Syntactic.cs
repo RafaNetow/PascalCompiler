@@ -2,6 +2,7 @@
 using System.CodeDom;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.InteropServices;
@@ -20,7 +21,7 @@ using Mini_Compiler.Tree;
 using Mini_Compiler.Tree.BooleanNode;
 using Mini_Compiler.Tree.CaseNode;
 using Mini_Compiler.Tree.Declaretion;
-using Mini_Compiler.Tree.Declaretion.ArrayTypes;
+
 
 namespace Mini_Compiler.Sintactico
 {
@@ -192,6 +193,8 @@ namespace Mini_Compiler.Sintactico
                     {
                         ConsumeNextToken();
                         functioN.BlockFunction = FunctionBlock();
+                        if(CompareTokenType(TokenTypes.Eos))
+                            ConsumeNextToken();
 
                         return functioN;
 
@@ -491,7 +494,7 @@ namespace Mini_Compiler.Sintactico
             {
                 param.IsDeclaretionVar = false;
                 param.Variables.Add(new IdNode { Value = currentToken.Lexeme });
-                ConsumeNextToken();
+                IdList(param.Variables);
                 if (CompareTokenType(TokenTypes.Declaretion))
                 {
                     ConsumeNextToken();
@@ -540,6 +543,7 @@ namespace Mini_Compiler.Sintactico
             ConsumeNextToken();
             if (CompareTokenType(TokenTypes.Id))
             {
+             
                 currentConst.ConstName.Value = currentToken.Lexeme;
             }
             else
@@ -550,7 +554,9 @@ namespace Mini_Compiler.Sintactico
             ConsumeNextToken();
             if (CompareTokenType(TokenTypes.EqualOp))
             {
+                ConsumeNextToken();
                 currentConst.ExpressionConst= E();
+                currentConst.declare = false;
                 return currentConst;
 
             }
@@ -564,8 +570,9 @@ namespace Mini_Compiler.Sintactico
 
                     if (CompareTokenType(TokenTypes.EqualOp))
                     {
+                        ConsumeNextToken();
                         currentConst.ExpressionConst = E();
-
+                        currentConst.declare = true;
                         return currentConst;
                     }
                     else
@@ -611,16 +618,16 @@ namespace Mini_Compiler.Sintactico
                 if (CompareTokenType(TokenTypes.EqualOp))
                 {
                     ConsumeNextToken();
-                    var KindOfType = TypeF();
+                    var kindOfType = TypeF();
                     
-                    KindOfType.NameOfType = NameOfType;
+                    kindOfType.Name = NameOfType;
                     //if (CompareTokenType(TokenTypes.RwEnd))
                     //{
                         //ConsumeNextToken();
                         if (CompareTokenType(TokenTypes.Eos))
                         {
                             ConsumeNextToken();
-                            return KindOfType;
+                            return kindOfType;
                         }
                         else
                         {
@@ -653,31 +660,18 @@ namespace Mini_Compiler.Sintactico
             {
                 string typeValue = currentToken.Lexeme;
                 ConsumeNextToken();
-                if (CompareTokenType(TokenTypes.Eos))
-                {
-                    ConsumeNextToken();
-                    return new TypeIdNode { TypeId = typeValue };
-                }
-                else
-                {
-                    throw new SyntaticException("Expected ;", currentToken.Row, currentToken.Column);
-                }
-               
 
+          
+                return new TypeIdNode {TypeId = typeValue};
             }
+           
 
-         else if (CompareTokenType(TokenTypes.RwArray))
+
+        else if (CompareTokenType(TokenTypes.RwArray))
             {
                return ArrayDeclaretion();
               
-                if (CompareTokenType(TokenTypes.Eos))
-                {
-                    return null;
-                }
-                else
-                {
-                    throw  new SyntaticException("Expect Eos",currentToken.Row,currentToken.Column);
-                }
+               
             }
 
 
@@ -691,7 +685,9 @@ namespace Mini_Compiler.Sintactico
              if (CompareTokenType(TokenTypes.SbRightParent))
              {
                  ConsumeNextToken();
-              
+
+
+                return new EnumerateNode{list = idList};
              }
              else
              {
@@ -709,11 +705,16 @@ namespace Mini_Compiler.Sintactico
                    sentencesRecord.Add(sentences);
                 }
 
-                
-             if (CompareTokenType(TokenTypes.Eos))
+
+             if (CompareTokenType(TokenTypes.RwEnd))
              {
                  ConsumeNextToken();
              }
+             else
+             {
+                 throw new SyntaticException("Expected End",currentToken.Row,currentToken.Row);
+             }
+
 
              return new RecordNode {RecordProperties = sentencesRecord };
              
@@ -770,7 +771,7 @@ namespace Mini_Compiler.Sintactico
             {
                 string TypeName = currentToken.Lexeme;
                 ConsumeNextToken();
-                return new ArrayTypeId {Type = TypeName };
+                return new TypeArrayNode { TypeArray = TypeName };
             }
             else
             {
@@ -808,14 +809,20 @@ namespace Mini_Compiler.Sintactico
                 if (CompareTokenType(TokenTypes.Declaretion))
                 {
                    var sentences = RecordType();
-                   
-                    if (CompareTokenType(TokenTypes.Eos)==false)
+
+                    if (CompareTokenType(TokenTypes.Eos))
                     {
-                        throw new SyntaticException("Expected EOS", currentToken.Row, currentToken.Column);
+                        ConsumeNextToken();
+                       
 
 
                     }
-                    ConsumeNextToken();
+                    else
+                    {
+                        throw new SyntaticException("Expected ;", currentToken.Row, currentToken.Column);
+                    }
+                    
+                  
                      return new RecordProperties {ListId = idList, Type = sentences};
 
                     
@@ -871,10 +878,26 @@ namespace Mini_Compiler.Sintactico
             {
                return ArrayDeclaretion();
            
-                if (CompareTokenType(TokenTypes.Eos)==false)
+            }
+            else if (CompareTokenType(TokenTypes.SbLeftParent))
+            {
+                ConsumeNextToken();
+                List<IdNode> idList = new List<IdNode>();
+                idList.Add(new IdNode { Value = currentToken.Lexeme });
+                IdList(idList);
+
+                if (CompareTokenType(TokenTypes.SbRightParent))
                 {
-                    throw  new SyntaticException("Expected ;",currentToken.Row,currentToken.Column);
+                    ConsumeNextToken();
+
+
+                    return new EnumerateNode { list = idList };
                 }
+                else
+                {
+                    throw new SyntaticException("Expected LeftParent", currentToken.Row, currentToken.Column);
+                }
+
             }
 
             return null;
@@ -915,7 +938,7 @@ namespace Mini_Compiler.Sintactico
             ConsumeNextToken();
 
 
-            if (CompareTokenType(TokenTypes.AccesOp))
+            if (CompareTokenType(TokenTypes.AccesOp) ||  CompareTokenType(TokenTypes.OpenBracketOperator))
             {
              
                 IndexingAndAccess(accesList);
@@ -934,7 +957,7 @@ namespace Mini_Compiler.Sintactico
                 
                 listOfExpression.Add(expression);
                 ConsumeNextToken();
-                return new PreIdNode {ListExpressionNodes = listOfExpression, Variable =Id, IsAfunction = false };
+                return new PreIdNode {ListExpressionNodes = listOfExpression, Variable =Id, IsAProcedure = false, ExpressionAssigned  = expression};
             }
            else if (CompareTokenType(TokenTypes.SbLeftParent))
            {
@@ -952,7 +975,7 @@ namespace Mini_Compiler.Sintactico
                        {
                            ListExpressionNodes = listOfExpression,
                            Variable = Id,
-                           IsAfunction = true
+                           IsAProcedure = true
                        };
                    }
                    else
@@ -1701,6 +1724,26 @@ namespace Mini_Compiler.Sintactico
                 currentToken = lexer.GetNextToken();
                 return new BooleanNode { Value = false };//To do
             }
+            if (currentToken.Type == TokenTypes.Hexa)
+            {
+                var value = currentToken.Lexeme;
+                currentToken = lexer.GetNextToken();
+                return new HexaNode {Value = value};
+            }
+            if (currentToken.Type == TokenTypes.Binary)
+            {
+                var value = currentToken.Lexeme;
+                currentToken = lexer.GetNextToken();
+                return new BinaNode { Value = value };
+            }
+
+            
+            if (currentToken.Type == TokenTypes.RealLiteral)
+            {
+                var value = currentToken.Lexeme;
+                currentToken = lexer.GetNextToken();
+                return new RealNode { Value = double.Parse(value, CultureInfo.InvariantCulture) };
+            }
             if (currentToken.Type == TokenTypes.NumericLiteral)
             {
                 var value = float.Parse(currentToken.Lexeme);
@@ -1810,6 +1853,51 @@ namespace Mini_Compiler.Sintactico
         }
     }
 
+    internal class BinaNode : ExpressionNode
+    {
+        public string Value;
+        public override BaseType ValidateSemantic()
+        {
+
+            return null;
+        }
+
+        public override string GenerateCode()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    internal class HexaNode : ExpressionNode
+    {
+        public string Value;
+        
+
+        public override BaseType ValidateSemantic()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override string GenerateCode()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    internal class RealNode : ExpressionNode
+    {
+        public double Value { get; set; }
+        public override BaseType ValidateSemantic()
+        {
+            return TypesTable.Instance.GetType("real");
+        }
+
+        public override string GenerateCode()
+        {
+            return Value.ToString(CultureInfo.InvariantCulture);
+        }
+    }
+
     internal class NotNode : ExpressionNode
     {
        
@@ -1826,6 +1914,11 @@ namespace Mini_Compiler.Sintactico
             {
                 throw  new Exception("UnExptected symbol");
             }
+        }
+
+        public override string GenerateCode()
+        {
+            throw new NotImplementedException();
         }
     }
 
@@ -1848,6 +1941,11 @@ namespace Mini_Compiler.Sintactico
                     }
                 };
         }
+
+        public override string GenerateCode()
+        {
+            throw new NotImplementedException();
+        }
     }
 
     internal class LesserOrEqualOperationNode : BinaryOperatorNode
@@ -1866,6 +1964,11 @@ namespace Mini_Compiler.Sintactico
                         TypesTable.Instance.GetType("Boolean")
                     },
                 };
+        }
+
+        public override string GenerateCode()
+        {
+            throw new NotImplementedException();
         }
     }
 
@@ -1929,7 +2032,7 @@ namespace Mini_Compiler.Sintactico
 
     internal class LesserOperationNode : BinaryOperatorNode
     {
-        public LesserOrEqualOperationNode()
+        public LesserOperationNode()
         {
             this.Validation = new Dictionary<Tuple<BaseType, BaseType>, BaseType>
                 {
@@ -1979,13 +2082,18 @@ namespace Mini_Compiler.Sintactico
 
     }
 
-    public class NumberNode : BinaryOperatorNode
+    public class NumberNode : ExpressionNode
     {
        
         public float Value { get; set; }
         public override BaseType ValidateSemantic()
         {
             return TypesTable.Instance.GetType("integer");
+        }
+
+        public override string GenerateCode()
+        {
+            return $"{Value}";
         }
     }
 
@@ -2041,8 +2149,37 @@ namespace Mini_Compiler.Sintactico
                         new Tuple<BaseType, BaseType>(TypesTable.Instance.GetType("real"),
                             TypesTable.Instance.GetType("real")),
                         TypesTable.Instance.GetType("real")
+                    }, {
+                        new Tuple<BaseType, BaseType>(TypesTable.Instance.GetType("string"),
+                            TypesTable.Instance.GetType("char")),
+                        TypesTable.Instance.GetType("string")
+                    },{
+                        new Tuple<BaseType, BaseType>(TypesTable.Instance.GetType("char"),
+                            TypesTable.Instance.GetType("string")),
+                        TypesTable.Instance.GetType("string")
+                    },{
+                        new Tuple<BaseType, BaseType>(TypesTable.Instance.GetType("integer"),
+                            TypesTable.Instance.GetType("char")),
+                        TypesTable.Instance.GetType("string")
+                    },{
+                        new Tuple<BaseType, BaseType>(TypesTable.Instance.GetType("char"),
+                            TypesTable.Instance.GetType("integer")),
+                        TypesTable.Instance.GetType("string")
+                    },{
+                        new Tuple<BaseType, BaseType>(TypesTable.Instance.GetType("integer"),
+                            TypesTable.Instance.GetType("string")),
+                        TypesTable.Instance.GetType("string")
+                    },{
+                        new Tuple<BaseType, BaseType>(TypesTable.Instance.GetType("string"),
+                            TypesTable.Instance.GetType("integer")),
+                        TypesTable.Instance.GetType("string")
                     },
-                   
+
+
+
+
+
+
                };
 
         }
@@ -2070,16 +2207,27 @@ namespace Mini_Compiler.Sintactico
 
                };
         }
-       
+
+        public override string GenerateCode()
+        {
+            throw new NotImplementedException();
+        }
     }
 
-    internal class StringNode : BinaryOperatorNode
+    internal class StringNode : ExpressionNode
     {
         public string Value { get; set; }
         public override BaseType ValidateSemantic()
         {
             return TypesTable.Instance.GetType("string");
         }
+
+        public override string GenerateCode()
+        {
+            var javaString = Value.Remove(0, 1);
+            javaString = javaString.Remove(javaString.Length - 1, 1);
+            return $"\"{javaString}\"";
+;        }
     }
 
     public class SyntaticException : Exception

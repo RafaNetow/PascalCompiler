@@ -47,6 +47,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Generate Java\GenerateMain.cs" />
     <Compile Include="Handlers\HandlerFiles.cs" />
     <Compile Include="Lexer\Lexer.cs" />
     <Compile Include="Lexer\LexicalException.cs" />
@@ -68,9 +69,12 @@
     <Compile Include="Semantic\Types\BaseType.cs" />
     <Compile Include="Semantic\Types\CharType.cs" />
     <Compile Include="Semantic\Types\ConstType.cs" />
+    <Compile Include="Semantic\Types\EnumerateType.cs" />
+    <Compile Include="Semantic\Types\EnumParam.cs" />
     <Compile Include="Semantic\Types\FunctionType.cs" />
     <Compile Include="Semantic\Types\IntType.cs" />
     <Compile Include="Semantic\Types\RealType.cs" />
+    <Compile Include="Semantic\Types\recordType.cs" />
     <Compile Include="Semantic\Types\StringType.cs" />
     <Compile Include="Sintactico\BinaryOperatorNode.cs" />
     <Compile Include="Sintactico\CallFunctionNode.cs" />
@@ -92,9 +96,7 @@
     <Compile Include="Tree\DeclarationNode.cs" />
     <Compile Include="Tree\Bucles\ForInNode.cs" />
     <Compile Include="Tree\Bucles\ForNode.cs" />
-    <Compile Include="Tree\Declaretion\ArrayTypes\ArrayTypeArray.cs" />
-    <Compile Include="Tree\Declaretion\ArrayTypes\ArrayTypeId.cs" />
-    <Compile Include="Tree\Declaretion\ArrayTypes\ArrayTypeRange.cs" />
+    <Compile Include="Tree\Declaretion\EnumerateNode.cs" />
     <Compile Include="Tree\Declaretion\RecordNode.cs" />
     <Compile Include="Tree\Declaretion\RecordProperties.cs" />
     <Compile Include="Tree\Declaretion\TypeArrayNode.cs" />
@@ -103,6 +105,7 @@
     <Compile Include="Tree\FunctionNode.cs" />
     <Compile Include="Tree\Conditions\IfNode.cs" />
     <Compile Include="Tree\IndexAccesorNode.cs" />
+    <Compile Include="Semantic\Types\ProceureType.cs" />
     <Compile Include="Tree\SentencesNode.cs" />
     <Compile Include="Tree\PreIdNode.cs" />
     <Compile Include="Tree\ProcedureNode.cs" />
@@ -123,6 +126,7 @@
     <Folder Include="bin\Release\" />
     <Folder Include="obj\Debug\TempPE\" />
     <Folder Include="Test\" />
+    <Folder Include="Tree\Declaretion\ArrayTypes\" />
     <Folder Include="Tree\Relacionales\" />
   </ItemGroup>
   <ItemGroup>

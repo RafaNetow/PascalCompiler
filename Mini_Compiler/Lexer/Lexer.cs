@@ -184,7 +184,7 @@ namespace Mini_Compiler.Lexer
                             lexeme += _currentSymbol.CurrentSymbol;
                             _currentSymbol = Content.nextSymbol();
                         }
-                          else if (_currentSymbol.CurrentSymbol == '\"')
+                          else if (_currentSymbol.CurrentSymbol == '\'')
                         {
                             state = 3;
                             tokenColumn = _currentSymbol.Column;
@@ -265,22 +265,7 @@ namespace Mini_Compiler.Lexer
                             _currentSymbol = Content.nextSymbol();
 
                         }
-                        else if (_currentSymbol.CurrentSymbol == '\"')
-                        {
-                            state = 3;
-                            tokenColumn = _currentSymbol.Column;
-                            tokenRow = _currentSymbol.Row;
-                            lexeme += _currentSymbol.CurrentSymbol;
-                            _currentSymbol = Content.nextSymbol();
-                        }
-                        else if (_currentSymbol.CurrentSymbol == '\'')
-                        {
-                            state = 14;
-                            tokenColumn = _currentSymbol.Column;
-                            tokenRow = _currentSymbol.Row;
-                            lexeme += _currentSymbol.CurrentSymbol;
-                            _currentSymbol = Content.nextSymbol();
-                        }
+                      
 
                        else if (_currentSymbol.CurrentSymbol == '.')
                        {
@@ -340,12 +325,12 @@ namespace Mini_Compiler.Lexer
                         }
                         break;
                     case 3:
-                        if (_currentSymbol.CurrentSymbol != '\"')
+                        if (_currentSymbol.CurrentSymbol != '\'')
                         {
                             lexeme += _currentSymbol.CurrentSymbol;
                             _currentSymbol = Content.nextSymbol();
                         }
-                        else if (_currentSymbol.CurrentSymbol == '\"')
+                        else if (_currentSymbol.CurrentSymbol == '\'')
                         {
                             lexeme += _currentSymbol.CurrentSymbol;
                             _currentSymbol = Content.nextSymbol();
@@ -547,19 +532,7 @@ namespace Mini_Compiler.Lexer
                            
                         }
                         break;
-                    case 14:
                    
-                        if (_currentSymbol.CurrentSymbol == '\'')
-                             throw  new LexicalException("expected Id");
-                        lexeme += _currentSymbol.CurrentSymbol;
-                        _currentSymbol = Content.nextSymbol();
-                        if (_currentSymbol.CurrentSymbol == '\'')
-                            lexeme += _currentSymbol.CurrentSymbol;
-                             _currentSymbol= Content.nextSymbol();
-
-                        {
-                            return new Token {Lexeme = lexeme,Column = tokenColumn, Row = tokenRow, Type = TokenTypes.char_literal};
-                        }
 
                     case 15:
                         if (_currentSymbol.CurrentSymbol == '.')

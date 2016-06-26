@@ -56,5 +56,10 @@ namespace Mini_Compiler.Sintactico
             
             
         }
+
+        public override string GenerateCode()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

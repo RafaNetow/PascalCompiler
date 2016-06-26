@@ -16,7 +16,7 @@ namespace Mini_Compiler.Tree
         {
             if (!(FirstCondition.ValidateSemantic() is IntType))
             {
-                throw new SemanticException("Expected integer variable  ");
+                throw new SemanticException("Expected i~nteger variable  ");
             }
             if (!(SecondCondition.ValidateSemantic() is IntType))
             {
@@ -30,7 +30,7 @@ namespace Mini_Compiler.Tree
             }
         }
 
-        public override void GenerateCode()
+        public override string GenerateCode()
         {
             throw new System.NotImplementedException();
         }

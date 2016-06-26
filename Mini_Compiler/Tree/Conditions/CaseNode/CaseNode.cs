@@ -32,7 +32,7 @@ namespace Mini_Compiler.Tree.CaseNode
                  
             }
 
-        public override void GenerateCode()
+        public override string GenerateCode()
         {
             throw new NotImplementedException();
         }

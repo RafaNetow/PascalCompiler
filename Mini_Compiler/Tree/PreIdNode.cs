@@ -9,24 +9,25 @@ namespace Mini_Compiler.Tree
 {
     public  class PreIdNode : SentencesNode
     {
-        public bool IsAfunction;
+        public bool IsAProcedure;
         public List<ExpressionNode> ListExpressionNodes;
         public IdNode Variable;
+        public ExpressionNode ExpressionAssigned;
 
 
         public override void ValidateSemantic()
         {
-            if (IsAfunction)
+            if (IsAProcedure)
             {
 
                 var type = SymbolTable.Instance.GetVariable(Variable.Value);
                 int count = 0;
 
 
-                if (type is FunctionType)
+                if (type is ProceureType)
                 {
 
-                    var function = (FunctionType) type;
+                    var function = (ProceureType) type;
 
                     if (function._parameter.Count != ListExpressionNodes.Count)
                     {
@@ -47,18 +48,52 @@ namespace Mini_Compiler.Tree
                 }
                 else
                 {
-                    throw new Exception("Is not a function");
+                    throw new Exception("Is not a procedure");
                 }
 
             }
             else
             {
-                var name = Variable.ValidateSemantic();
-                var valueType = ListExpressionNodes[0].ValidateSemantic();
-                if (!name.IsAssignable(valueType) )
+
+
+                var typeVariable = SymbolTable.Instance.GetVariable(Variable.Value);
+                var typeOfAssigned = ExpressionAssigned.ValidateSemantic();
+                if (typeVariable is EnumerateType)
                 {
-                    throw new SemanticException("Tipos incompatibles entre si.");
+                    var typeToAssign = ExpressionAssigned.ValidateSemantic();
+                    if (typeToAssign is EnumParam)
+                    {
+                        var castTypeToAssign = (EnumParam)typeToAssign;
+                       var castTypeVariable = (EnumerateType) typeVariable;
+
+                        if(!castTypeVariable.ListOfParams.Contains(castTypeToAssign.Name))
+                            throw  new SemanticException(" No se puede asignar el valor al enum");
+                    }
+                    else
+                    {
+                        throw new SemanticException("el tipo de asignacion no esta permita");
+                    }
+
+
                 }
+
+               
+                else if (typeOfAssigned is ConstType)
+                {
+                    throw new SemanticException("no se puede asignar a una constante.");
+                }
+                else
+                {
+
+                     typeOfAssigned = ExpressionAssigned.ValidateSemantic();
+                    var valueType = ListExpressionNodes[0].ValidateSemantic();
+                    if (!typeOfAssigned.IsAssignable(valueType))
+                    {
+                        throw new SemanticException("Tipos incompatibles entre si.");
+                    }
+
+                }
+
 
             }
             
@@ -66,9 +101,9 @@ namespace Mini_Compiler.Tree
             
         }
 
-        public override void GenerateCode()
+        public override string GenerateCode()
         {
-            throw new System.NotImplementedException();
+            return Variable.Value+" "+ "="+ ExpressionAssigned.GenerateCode()+";";
         }
     }
 }

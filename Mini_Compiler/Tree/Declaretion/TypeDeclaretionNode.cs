@@ -7,18 +7,12 @@ using Mini_Compiler.Sintactico;
 
 namespace Mini_Compiler.Tree.Declaretion
 {
-    public class TypeDeclaretionNode : SentencesNode
+    public abstract class TypeDeclaretionNode : SentencesNode
     {
-       public string NameOfType;
+       public string  Name;
+        public abstract override string GenerateCode();
 
-        public override void ValidateSemantic()
-        {
-            throw new NotImplementedException();
-        }
 
-        public override void GenerateCode()
-        {
-            throw new NotImplementedException();
-        }
+
     }
 }

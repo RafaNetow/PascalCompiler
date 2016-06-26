@@ -28,10 +28,14 @@ namespace Mini_Compiler
             try
             {
                 var treeNodes = parser.Parse();
+                var javaCode = string.Empty;
                 foreach (var sentencesNode in treeNodes)
                 {
                     sentencesNode.ValidateSemantic();
+                   javaCode += sentencesNode.GenerateCode();
+                    
                 }
+                Console.WriteLine(javaCode);
                 Console.WriteLine("errors no founds");
                 Console.ReadKey();
             }

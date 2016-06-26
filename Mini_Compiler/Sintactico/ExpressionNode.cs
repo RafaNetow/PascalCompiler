@@ -5,5 +5,7 @@ namespace Mini_Compiler.Sintactico
     public abstract class ExpressionNode
     {
         public abstract BaseType ValidateSemantic();
+        public abstract string GenerateCode();
+
     }
 }

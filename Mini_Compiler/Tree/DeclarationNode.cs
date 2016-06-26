@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.Remoting.Metadata.W3cXsd2001;
 using Mini_Compiler.Semantic;
 using Mini_Compiler.Sintactico;
 using TechTalk.SpecFlow;
@@ -18,10 +19,12 @@ namespace Mini_Compiler.Tree
             if (Expression)
             {
                 var name = LIstIdNode[0];
-                
+
+
+               
                 SymbolTable.Instance.DeclareVariable(name.Value, typeId);
 
-
+               
 
                 if (typeId != ExpressionType.ValidateSemantic())
                 {
@@ -39,10 +42,40 @@ namespace Mini_Compiler.Tree
             }
         }
 
-        public override void GenerateCode()
+        public override string GenerateCode()
         {
-            throw new System.NotImplementedException();
-        }
+            string type = "";
+             type = TypeId.Value;
+            string variables = "";
+            int count = 0;
+            if (Expression)
+            {
+                
 
+
+                return type + " " + this.LIstIdNode[0] + "=" + ExpressionType.GenerateCode() + ";";
+
+            }
+            else
+            {
+                foreach (var idNode in LIstIdNode)
+                {
+                    if (count == 0) { 
+                        variables = idNode.Value;
+                        count++;
+                    }
+                    else
+                    {
+                        variables = variables+"," + idNode.Value;
+                        
+                    }
+
+
+                }
+                return type + " " + variables + ";";
+
+            }
+            
+        }
     }
 }

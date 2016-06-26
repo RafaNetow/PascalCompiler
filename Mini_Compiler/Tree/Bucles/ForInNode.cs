@@ -18,7 +18,7 @@ namespace Mini_Compiler.Tree
             }
         }
 
-        public override void GenerateCode()
+        public override string GenerateCode()
         {
             throw new System.NotImplementedException();
         }

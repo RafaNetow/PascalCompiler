@@ -17,5 +17,10 @@ namespace Mini_Compiler.Tree.BooleanNode
         {
             throw new NotImplementedException();
         }
+
+        public override string GenerateCode()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

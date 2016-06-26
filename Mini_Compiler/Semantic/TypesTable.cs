@@ -18,9 +18,10 @@ namespace Mini_Compiler.Semantic
             _table = new Dictionary<string, BaseType>();
             _table.Add("integer", new IntType());
             _table.Add("string", new StringType());
-            _table.Add("real ", new RealType());
+            _table.Add("real", new RealType());
             _table.Add("char", new CharType());
             _table.Add("boolean",new BooleanType());
+            _table.Add("Boolean", new BooleanType());
             _table.Add("Const", new ConstType());
             //_table.Add("function", new FunctionType());
             

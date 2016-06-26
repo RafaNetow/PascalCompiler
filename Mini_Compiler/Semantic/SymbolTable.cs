@@ -129,7 +129,7 @@ namespace Mini_Compiler.Semantic
             if (otherType is ArrayType)
             {
                 var paramArray = (ArrayType)otherType;
-                if (Dimension == paramArray.Dimension && Type.IsAssignable(paramArray.Type))
+                if (paramArray.Dimension.Infe == Dimension.Infe && paramArray.Dimension.Super == Dimension.Super && Type.IsAssignable(paramArray))
                 {
                     return true;
                 }
