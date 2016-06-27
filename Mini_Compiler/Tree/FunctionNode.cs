@@ -43,7 +43,7 @@ namespace Mini_Compiler.Tree
 
         public override string GenerateCode()
         {
-            throw new System.NotImplementedException();
+            return null;
         }
     }
 }

@@ -126,8 +126,6 @@
     <Folder Include="bin\Release\" />
     <Folder Include="obj\Debug\TempPE\" />
     <Folder Include="Test\" />
-    <Folder Include="Tree\Declaretion\ArrayTypes\" />
-    <Folder Include="Tree\Relacionales\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="bin\Debug\Mini_Compiler.vshost.exe" />

@@ -11,7 +11,11 @@ namespace Mini_Compiler.Sintactico
         public List<AccesorNode> Accesors = new List<AccesorNode>();
         public override BaseType ValidateSemantic()
         {
-          var type = SymbolTable.Instance.GetVariable(Value);
+            if (TypesTable._instance._table.ContainsKey(Value))
+            {
+                return TypesTable.Instance.GetType(Value);
+            }
+            var type = SymbolTable.Instance.GetVariable(Value);
           
 
             foreach (var variable in Accesors)
@@ -21,6 +25,30 @@ namespace Mini_Compiler.Sintactico
             }
             return type;
             
+        }
+
+        public override string GenerateCode()
+        {
+            if(Accesors.Count == 0)
+            return $"{Value}";
+            string accesors = "";
+            foreach (var accesorNode in Accesors)
+            {
+                if (Accesors is PropertyAccesorNode)
+                {
+                    var propertyAcces = (PropertyAccesorNode) accesorNode;
+
+                    accesors = accesors+"."+propertyAcces.IdNode.Value;
+                }
+                else
+                {
+                    var IndexAcces = (IndexAccesorNode)accesorNode;
+                accesors =  accesors+ "."+  IndexAcces.IndexExpression.GenerateCode();
+
+                }
+            }
+            return accesors;
+
         }
     }
 }

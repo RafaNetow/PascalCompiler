@@ -10,8 +10,8 @@ namespace Mini_Compiler.Semantic
 {
     class TypesTable
     {
-        private Dictionary<string, BaseType> _table;
-        private static TypesTable _instance;
+        public Dictionary<string, BaseType> _table;
+       public static TypesTable _instance;
 
         private TypesTable()
         {

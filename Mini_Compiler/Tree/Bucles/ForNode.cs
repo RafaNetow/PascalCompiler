@@ -32,7 +32,12 @@ namespace Mini_Compiler.Tree
 
         public override string GenerateCode()
         {
-            throw new System.NotImplementedException();
+            string blockFor = "";
+            foreach (var statement in Sentences)
+            {
+              blockFor = blockFor+  statement.GenerateCode();
+            }
+            return "for (int "+ FirstIdOfCondition.Value + "="+this.FirstCondition.GenerateCode()+";"+FirstIdOfCondition.Value+"<"+this.SecondCondition.GenerateCode()+";"+FirstIdOfCondition.Value+ "++){" + blockFor+"}";
         }
     }
     }

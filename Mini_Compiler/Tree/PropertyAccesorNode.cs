@@ -17,7 +17,7 @@ namespace Mini_Compiler.Tree
             var idNodeType= TypesTable.Instance.GetType(IdNode.Value);
 
 
-            return null;
+            return idNodeType;
         }
     }
 }

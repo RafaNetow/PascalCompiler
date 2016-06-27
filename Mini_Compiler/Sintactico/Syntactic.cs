@@ -1179,7 +1179,7 @@ namespace Mini_Compiler.Sintactico
         {
             var option = new CaseLiteralList
             {
-                LiteralList = new List<NumberNode> {new NumberNode {Value = int.Parse(currentToken.Lexeme)}}
+                LiteralList = new List<IntNode> {new IntNode {Value = int.Parse(currentToken.Lexeme)}}
             };
             var numberLiteral = currentToken.Lexeme;
             ConsumeNextToken();
@@ -1193,10 +1193,10 @@ namespace Mini_Compiler.Sintactico
 
            else if (CompareTokenType(TokenTypes.CommaOperator))
             {
-                var numberLiteralList = new List<NumberNode> { new NumberNode { Value = int.Parse(numberLiteral) } };
+                var numberLiteralList = new List<IntNode> { new IntNode { Value = int.Parse(numberLiteral) } };
                 var expressionList = new List<ExpressionNode>();
                 ExpressionList(expressionList);
-                foreach (var expressionNode in expressionList) numberLiteralList.Add((NumberNode)expressionNode);
+                foreach (var expressionNode in expressionList) numberLiteralList.Add((IntNode)expressionNode);
 
                 return new CaseLiteralList { LiteralList = numberLiteralList };
             }
@@ -1748,7 +1748,7 @@ namespace Mini_Compiler.Sintactico
             {
                 var value = float.Parse(currentToken.Lexeme);
                 currentToken = lexer.GetNextToken();
-                return new NumberNode { Value = value };
+                return new IntNode { Value = value };
             }
             else if (currentToken.Type == TokenTypes.Id)
             {
@@ -1918,7 +1918,7 @@ namespace Mini_Compiler.Sintactico
 
         public override string GenerateCode()
         {
-            throw new NotImplementedException();
+            return "!";
         }
     }
 
@@ -1944,7 +1944,7 @@ namespace Mini_Compiler.Sintactico
 
         public override string GenerateCode()
         {
-            throw new NotImplementedException();
+            return this.LeftOperand.GenerateCode() + ">" +this.RightOperand.GenerateCode();
         }
     }
 
@@ -1968,7 +1968,7 @@ namespace Mini_Compiler.Sintactico
 
         public override string GenerateCode()
         {
-            throw new NotImplementedException();
+            return this.LeftOperand.GenerateCode() + "<=" + this.RightOperand.GenerateCode();
         }
     }
 
@@ -1989,7 +1989,11 @@ namespace Mini_Compiler.Sintactico
                     },
                 };
         }
-       
+
+        public override string GenerateCode()
+        {
+            return this.LeftOperand.GenerateCode() + ">=" + this.RightOperand.GenerateCode();
+        }
     }
 
     internal class InequalityOperationNode : BinaryOperatorNode
@@ -2009,6 +2013,11 @@ namespace Mini_Compiler.Sintactico
                     },
                 };
         }
+
+        public override string GenerateCode()
+        {
+            return this.LeftOperand.GenerateCode() + "!=" + this.RightOperand.GenerateCode();
+        }
     }
 
     internal class EqualityOperationNode : BinaryOperatorNode
@@ -2027,6 +2036,11 @@ namespace Mini_Compiler.Sintactico
                         TypesTable.Instance.GetType("real")
                     },
                 };
+        }
+
+        public override string GenerateCode()
+        {
+            return this.LeftOperand.GenerateCode() + "==" + this.RightOperand.GenerateCode();
         }
     }
 
@@ -2049,6 +2063,10 @@ namespace Mini_Compiler.Sintactico
         }
 
 
+        public override string GenerateCode()
+        {
+            return this.LeftOperand.GenerateCode() + "<" + this.RightOperand.GenerateCode();
+        }
     }
 
     internal class DivNode : BinaryOperatorNode
@@ -2080,9 +2098,13 @@ namespace Mini_Compiler.Sintactico
 
         }
 
+        public override string GenerateCode()
+        {
+            return this.LeftOperand.GenerateCode() + "/" + this.RightOperand.GenerateCode();
+        }
     }
 
-    public class NumberNode : ExpressionNode
+    public class IntNode : ExpressionNode
     {
        
         public float Value { get; set; }
@@ -2129,8 +2151,12 @@ namespace Mini_Compiler.Sintactico
 
 
         }
-        
-      
+
+
+        public override string GenerateCode()
+        {
+            return this.LeftOperand.GenerateCode() + "*" + this.RightOperand.GenerateCode();
+        }
     }
       
     internal class SubNode : BinaryOperatorNode
@@ -2138,7 +2164,38 @@ namespace Mini_Compiler.Sintactico
 
         public SubNode()
         {
-           Validation=   new Dictionary<Tuple<BaseType, BaseType>, BaseType>
+
+            Validation = new Dictionary<Tuple<BaseType, BaseType>, BaseType>
+            {
+                {
+                    new Tuple<BaseType, BaseType>(TypesTable.Instance.GetType("integer"),
+                        TypesTable.Instance.GetType("integer")),
+                    TypesTable.Instance.GetType("integer")
+                },
+                {
+                    new Tuple<BaseType, BaseType>(TypesTable.Instance.GetType("real"),
+                        TypesTable.Instance.GetType("real")),
+                    TypesTable.Instance.GetType("real")
+                },
+
+            };
+
+        }
+
+
+        public override string GenerateCode()
+        {
+            return this.LeftOperand.GenerateCode() + "-" + this.RightOperand.GenerateCode();
+        }
+    }
+
+    internal class AddNode : BinaryOperatorNode
+    {
+       
+        public AddNode()
+        {
+            
+            Validation = new Dictionary<Tuple<BaseType, BaseType>, BaseType>
                {
                     {
                         new Tuple<BaseType, BaseType>(TypesTable.Instance.GetType("integer"),
@@ -2181,36 +2238,11 @@ namespace Mini_Compiler.Sintactico
 
 
                };
-
-        }
-
-      
-    }
-
-    internal class AddNode : BinaryOperatorNode
-    {
-       
-        public AddNode()
-        {
-            Validation = new Dictionary<Tuple<BaseType, BaseType>, BaseType>
-               {
-                    {
-                        new Tuple<BaseType, BaseType>(TypesTable.Instance.GetType("integer"),
-                            TypesTable.Instance.GetType("integer")),
-                        TypesTable.Instance.GetType("integer")
-                    },
-                    {
-                        new Tuple<BaseType, BaseType>(TypesTable.Instance.GetType("real"),
-                            TypesTable.Instance.GetType("real")),
-                        TypesTable.Instance.GetType("real")
-                    },
-
-               };
         }
 
         public override string GenerateCode()
         {
-            throw new NotImplementedException();
+            return this.LeftOperand.GenerateCode() + "+" + this.RightOperand.GenerateCode();
         }
     }
 

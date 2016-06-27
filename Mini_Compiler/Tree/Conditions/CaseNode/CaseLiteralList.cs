@@ -9,6 +9,6 @@ namespace Mini_Compiler.Tree.CaseNode
 {
     class CaseLiteralList : CaseLiteral
     {
-        public List<NumberNode> LiteralList;
+        public List<IntNode> LiteralList;
     }
 }

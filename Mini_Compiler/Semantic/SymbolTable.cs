@@ -10,7 +10,7 @@ namespace Mini_Compiler.Semantic
 {
     class SymbolTable
     {
-        private Dictionary<string, BaseType> _table;
+       public Dictionary<string, BaseType> _table;
         private static SymbolTable _instance;
 
 

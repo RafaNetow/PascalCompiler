@@ -22,7 +22,13 @@ namespace Mini_Compiler.Tree
 
         public override string GenerateCode()
         {
-            throw new System.NotImplementedException();
+            string blockWhile = "";
+            foreach (var sentence in Sentences)
+            {
+                blockWhile = blockWhile + sentence.GenerateCode();
+            }
+
+            return "while(" + Condition.GenerateCode() + ")" + "{" + blockWhile + "}";
         }
     }
 }
