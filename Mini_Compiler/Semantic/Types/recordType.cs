@@ -18,7 +18,7 @@ namespace Mini_Compiler.Semantic.Types
 
         public override string GenerateCode()
         {
-            throw new NotImplementedException();
+            return name;
         }
     }
 }

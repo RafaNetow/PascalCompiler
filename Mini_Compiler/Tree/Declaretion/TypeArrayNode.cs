@@ -40,7 +40,7 @@ namespace Mini_Compiler.Tree.Declaretion
                 {
 
                 dimensions.Add(type.Dimension.Super.GenerateCode());
-                if (isPrimitive(type.Type))
+                if (isPrimitive(type.Type) || type.Type is RecordType)
                     {
                         return dimensions;
 
@@ -48,7 +48,7 @@ namespace Mini_Compiler.Tree.Declaretion
 
 
 
-               
+             
                 type = (ArrayType)type.Type;
 
                 }
@@ -65,7 +65,7 @@ namespace Mini_Compiler.Tree.Declaretion
             {
 
 
-                if (isPrimitive(type.Type))
+                if (isPrimitive(type.Type) || type.Type is RecordType)
                 {
                     return dimensions = type.Type;
 
@@ -134,12 +134,18 @@ namespace Mini_Compiler.Tree.Declaretion
                 dimensionCode = dimensionCode+"[" + variable + "]";
                     brackets = brackets + "[]";
                 }
-             BaseType t= getType((ArrayType)type);
+
+
+            
+            
+             var    t = getType((ArrayType) type);
+          
 
 
 
 
-          var  temp =   t.GenerateCode() + " " + this.Name + "=" + " " + "new" + " " + t.GenerateCode() + dimensionCode + ";";
+
+            var  temp =   t.GenerateCode() + " " + this.Name + "=" + " " + "new" + " " + t.GenerateCode() + dimensionCode + ";";
 
 
 
