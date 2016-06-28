@@ -21,7 +21,13 @@ namespace Mini_Compiler.Tree
 
         public override string GenerateCode()
         {
-            throw new System.NotImplementedException();
-        }
+
+            string repeatBlock = "";
+            foreach (var sentence in ListSentences)
+            {
+                repeatBlock = repeatBlock + sentence.GenerateCode();
+            }
+            return "do{" + repeatBlock +"}"+"while("+Condition.GenerateCode()+");";
+    }
     }
 }

@@ -9,10 +9,16 @@ namespace Mini_Compiler.Semantic.Types
 {
     class RecordType : BaseType
     {
+        public string name;
         public List<RecordProperties> RecordProperties = new List<RecordProperties>();
         public override bool IsAssignable(BaseType otherType)
         {
             return false;
+        }
+
+        public override string GenerateCode()
+        {
+            throw new NotImplementedException();
         }
     }
 }

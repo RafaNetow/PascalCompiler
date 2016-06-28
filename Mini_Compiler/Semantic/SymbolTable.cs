@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Mini_Compiler.Semantic.Types;
 using Mini_Compiler.Sintactico;
+using Mini_Compiler.Tree;
 
 namespace Mini_Compiler.Semantic
 {
@@ -14,9 +15,16 @@ namespace Mini_Compiler.Semantic
         private static SymbolTable _instance;
 
 
+
         private SymbolTable()
         {
+            List<ParameterFunction> list = new List<ParameterFunction>();
+            
             _table = new Dictionary<string, BaseType>();
+           var typeString =  TypesTable.Instance.GetType("string");
+            list.Add( new ParameterFunction {IsVar = false, Type = typeString });
+           _table.Add("getformdata",new FunctionType (list, typeString));
+            _table.Add("writeln", new ProceureType(list ));
 
         }
 
@@ -113,6 +121,19 @@ namespace Mini_Compiler.Semantic
         }
     }
 
+    internal class CallFuntionType : BaseType
+    {
+        public override bool IsAssignable(BaseType otherType)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override string GenerateCode()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     public class ArrayType : BaseType
     {
         public Range Dimension { get; set; }
@@ -136,6 +157,11 @@ namespace Mini_Compiler.Semantic
             }
 
             return false;
+        }
+
+        public override string GenerateCode()
+        {
+            throw new NotImplementedException();
         }
     }
 }

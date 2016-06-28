@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using Mini_Compiler.Semantic;
@@ -18,6 +19,13 @@ namespace Mini_Compiler.Tree
 
 
             return idNodeType;
+        }
+
+        public override string GeneratedCodeAttribute()
+        {
+            
+            return "." + IdNode.Value;
+
         }
     }
 }

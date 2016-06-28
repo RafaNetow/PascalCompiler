@@ -36,5 +36,21 @@ namespace Mini_Compiler.Handlers
             return file;
 
         }
+
+        public void writeCode(string code)
+        {
+            string file = "";
+            try
+            {
+               System.IO.File.WriteAllText("C:\\Users\\Sequeiros\\Documents\\Compi\\pascal\\pascal.java", code);
+            }
+            catch (Exception e)
+
+            {
+                Console.Write(" No se ha encontrado el archivo");
+                
+            }
+            
+        }
     }
     }

@@ -13,5 +13,10 @@ namespace Mini_Compiler.Semantic.Types
 
             return otherType is RealType;
         }
+
+        public override string GenerateCode()
+        {
+            return " double";
+        }
     }
 }

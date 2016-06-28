@@ -24,14 +24,25 @@ namespace Mini_Compiler.Tree.Declaretion
             }
 
 
-            SymbolTable.Instance.DeclareVariable(this.Name,new EnumerateType {ListOfParams = enumParams});
+            TypesTable.Instance.RegisterType(this.Name,new EnumerateType {ListOfParams = enumParams});
             
 
         }
 
+
         public override string GenerateCode()
         {
-            throw new NotImplementedException();
+
+            string enumCode = "";
+
+            int count = 0;
+            foreach (var sentence in list)
+            {
+                enumCode = enumCode+ "static final int "+sentence.Value+ "="+ count+";";
+                    count++;
+            }
+
+            return enumCode;
         }
     }
 }

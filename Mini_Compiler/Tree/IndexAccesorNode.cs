@@ -30,5 +30,11 @@ namespace Mini_Compiler.Tree
           
 
         }
+
+        public override string GeneratedCodeAttribute()
+        {
+            return "[" + IndexExpression.GenerateCode() + "]";
+            //return "." + IndexExpression.GenerateCode();
+        }
     }
 }

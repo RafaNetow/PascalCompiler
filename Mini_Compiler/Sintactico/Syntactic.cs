@@ -80,7 +80,11 @@ namespace Mini_Compiler.Sintactico
                 {
                     return FunctionDecla();
                 }
-                else if (CompareTokenType(TokenTypes.RwWhile))
+               else if (CompareTokenType(TokenTypes.RwExit))
+               {
+                   return null;
+               }
+            else if (CompareTokenType(TokenTypes.RwWhile))
                 {
                    return While();
                 }
@@ -184,7 +188,7 @@ namespace Mini_Compiler.Sintactico
             if (CompareTokenType(TokenTypes.Declaretion))
             {
                 ConsumeNextToken();
-
+             
                 if (CompareTokenType(TokenTypes.Id))
                 {
                     functioN.TypeOfReturn.Value = currentToken.Lexeme;
@@ -192,7 +196,9 @@ namespace Mini_Compiler.Sintactico
                     if (CompareTokenType(TokenTypes.Eos))
                     {
                         ConsumeNextToken();
-                        functioN.BlockFunction = FunctionBlock();
+                       
+                        functioN.BlockFunction = FunctionBlock(functioN);
+                        
                         if(CompareTokenType(TokenTypes.Eos))
                             ConsumeNextToken();
 
@@ -362,7 +368,7 @@ namespace Mini_Compiler.Sintactico
                 if (CompareTokenType(TokenTypes.Eos))
                 {
                     ConsumeNextToken();
-                    var sentencesList =   FunctionBlock();
+                    var sentencesList =   FunctionBlock(null);
 
 
 
@@ -381,7 +387,7 @@ namespace Mini_Compiler.Sintactico
             return null;
         }
 
-        private List<SentencesNode> FunctionBlock()
+        private List<SentencesNode> FunctionBlock(FunctionNode function)
         {
             List<SentencesNode> listSentencesOfBlock = new List<SentencesNode>();
             if (CompareTokenType(TokenTypes.RwBegin))
@@ -390,7 +396,22 @@ namespace Mini_Compiler.Sintactico
                 while (CompareTokenType(TokenTypes.RwEnd) == false)
                 {
                     var sentencesNode = ListSentence();
+                    if (sentencesNode != null) 
                     listSentencesOfBlock.Add(sentencesNode);
+                    if (CompareTokenType(TokenTypes.RwExit))
+                    {
+                        ConsumeNextToken();
+                        function.ReturParameter= E();
+
+                        if (CompareTokenType(TokenTypes.Eos))
+                            ConsumeNextToken();
+                        else
+                        {
+                            throw new SyntaticException("Expected;", currentToken.Row, currentToken.Column);
+                        }
+
+
+                    }
                 }
                 ConsumeNextToken();
                 if (CompareTokenType(TokenTypes.Eos))
@@ -504,6 +525,7 @@ namespace Mini_Compiler.Sintactico
                         param.TypeV.Value = currentToken.Lexeme;
                         ConsumeNextToken();
                         paramsOfProcedure.Add(param);
+                      
                     }
                     else
                     {
@@ -515,12 +537,12 @@ namespace Mini_Compiler.Sintactico
                     throw new SyntaticException("Expected :", currentToken.Row, currentToken.Row);
                 }
                 
-                ConsumeNextToken();
+                
                 if (CompareTokenType(TokenTypes.Eos))
                 {
                     ConsumeNextToken();
                 
-                    DeclarationParam(paramsOfProcedure);
+                  return  DeclarationParam(paramsOfProcedure);
                 }
                 else
                 {
@@ -865,7 +887,7 @@ namespace Mini_Compiler.Sintactico
                     sentencesRecord.Add(sentences);
                 }
 
-
+                ConsumeNextToken();
                 return new RecordNode
                 {
                      RecordProperties = sentencesRecord
@@ -1084,7 +1106,7 @@ namespace Mini_Compiler.Sintactico
                 if (CompareTokenType(TokenTypes.CloseBracketOperator))
                 {
                     ConsumeNextToken();
-                    aList.Insert(0, new IndexAccesorNode {IndexExpression = expression});
+                    aList.Insert(0, new IndexAccesorNode {IndexExpression = expression});//PropertyAccesorNode()
                     aList = IndexingAndAccess(aList);
                     return aList;
 

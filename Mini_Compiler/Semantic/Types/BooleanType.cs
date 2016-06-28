@@ -8,5 +8,10 @@ namespace Mini_Compiler.Tree
         {
             return otherType is BooleanType;
         }
+
+        public override string GenerateCode()
+        {
+            return " boolean";
+        }
     }
 }

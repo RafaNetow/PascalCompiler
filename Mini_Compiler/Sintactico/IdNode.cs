@@ -34,20 +34,11 @@ namespace Mini_Compiler.Sintactico
             string accesors = "";
             foreach (var accesorNode in Accesors)
             {
-                if (Accesors is PropertyAccesorNode)
-                {
-                    var propertyAcces = (PropertyAccesorNode) accesorNode;
+                accesors = accesors + accesorNode.GeneratedCodeAttribute();
 
-                    accesors = accesors+"."+propertyAcces.IdNode.Value;
-                }
-                else
-                {
-                    var IndexAcces = (IndexAccesorNode)accesorNode;
-                accesors =  accesors+ "."+  IndexAcces.IndexExpression.GenerateCode();
-
-                }
+            
             }
-            return accesors;
+            return this.Value+accesors;
 
         }
     }

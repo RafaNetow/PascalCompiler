@@ -14,7 +14,12 @@ namespace Mini_Compiler.Semantic.Types
             return false;
         }
 
-       public List<ParameterFunction> _parameter;
+        public override string GenerateCode()
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<ParameterFunction> _parameter;
         public readonly BaseType _functValue;
 
 

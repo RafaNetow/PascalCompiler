@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Generate Java\GenerateMain.cs" />
+    <Compile Include="Generate Java\PascalToJava.cs" />
     <Compile Include="Handlers\HandlerFiles.cs" />
     <Compile Include="Lexer\Lexer.cs" />
     <Compile Include="Lexer\LexicalException.cs" />

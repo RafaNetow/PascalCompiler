@@ -21,7 +21,10 @@ namespace Mini_Compiler.Tree
             if (!(SecondCondition.ValidateSemantic() is IntType))
             {
                 throw new SemanticException("Expected integer variable ");
+
             }
+
+            SymbolTable.Instance.DeclareVariable(FirstIdOfCondition.GenerateCode(),FirstCondition.ValidateSemantic());
             
 
             foreach (var statement in Sentences)

@@ -103,7 +103,36 @@ namespace Mini_Compiler.Tree
 
         public override string GenerateCode()
         {
-            return Variable.Value+" "+ "="+ ExpressionAssigned.GenerateCode()+";";
+
+
+            if (IsAProcedure)
+            {
+                string listParameters = "";
+                int count = 0;
+                if (this.Variable.Value == "writeln")
+                {
+                    return "out.println(" + ListExpressionNodes[0].GenerateCode() + ");";
+                }
+                foreach (var listExpressionNode in ListExpressionNodes)
+                {
+                    if (count == 0)
+                    {
+                        listParameters = listParameters + listExpressionNode.GenerateCode();
+                        count++;
+                    }
+                    else
+                    {
+                        listParameters = listParameters + "," + listExpressionNode.GenerateCode();
+                    }
+                }
+
+                return this.Variable.Value + "(" + listParameters + ");";
+            }
+            else
+            {
+
+                return Variable.Value + " " + "=" + ExpressionAssigned.GenerateCode() + ";\n";
+            }
         }
     }
 }

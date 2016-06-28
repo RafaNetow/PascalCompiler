@@ -57,6 +57,29 @@ namespace Mini_Compiler.Tree.Declaretion
 
         }
 
+        public BaseType getType(ArrayType type)
+        {
+            BaseType dimensions;
+
+            while (true)
+            {
+
+
+                if (isPrimitive(type.Type))
+                {
+                    return dimensions = type.Type;
+
+                }
+
+
+
+
+                type = (ArrayType)type.Type;
+
+            }
+
+        }
+
         public bool isPrimitive(BaseType type)
         {
             return type is BooleanType ||
@@ -86,6 +109,8 @@ namespace Mini_Compiler.Tree.Declaretion
 
 
             var type = TypesTable.Instance.GetType(this.TypeArray);
+            string brackets = "";
+
 
             
           /*  if (isPrimitive(type))
@@ -105,10 +130,20 @@ namespace Mini_Compiler.Tree.Declaretion
             
                 foreach (var variable in dimensionArray)
                 {
-                    dimensionCode = dimensionCode+"[" + variable + "]";
-                }
                 
-                return  this.TypeArray+ " "+this.Name+ "="+" "+"new" + " " + this.TypeArray + dimensionCode+";" ;
+                dimensionCode = dimensionCode+"[" + variable + "]";
+                    brackets = brackets + "[]";
+                }
+             BaseType t= getType((ArrayType)type);
+
+
+
+
+          var  temp =   t.GenerateCode() + " " + this.Name + "=" + " " + "new" + " " + t.GenerateCode() + dimensionCode + ";";
+
+
+
+            return  t.GenerateCode()+ brackets+ " " +this.Name+ "="+" "+"new" + " " + t.GenerateCode() + dimensionCode+";\n" ;
             
            
         }

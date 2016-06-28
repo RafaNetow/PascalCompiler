@@ -14,5 +14,10 @@ namespace Mini_Compiler.Semantic.Types
           
             return otherType == TypeConst;
         }
+
+        public override string GenerateCode()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -13,5 +13,10 @@ namespace Mini_Compiler.Semantic.Types
 
             return otherType is CharType;
         }
+
+        public override string GenerateCode()
+        {
+            return " char";
+        }
     }
 }

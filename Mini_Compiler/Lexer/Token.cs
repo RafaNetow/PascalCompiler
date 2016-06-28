@@ -87,7 +87,8 @@
         RealLiteral,
         RwStruct,
         RwFalse,
-        RwTrue
+        RwTrue,
+        RwExit
     }
 
     public class Token

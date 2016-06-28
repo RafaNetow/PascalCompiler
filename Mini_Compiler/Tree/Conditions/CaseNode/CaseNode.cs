@@ -34,7 +34,16 @@ namespace Mini_Compiler.Tree.CaseNode
 
         public override string GenerateCode()
         {
-            throw new NotImplementedException();
+
+            string blockCase = "";
+            int count = 1;
+            foreach (var caseStatement in CaseStatements)
+            {
+                blockCase = blockCase+"case " +count+":" + caseStatement.Statements[0].GenerateCode()+"break;\n";
+                count++;
+            }
+
+            return "switch("+CaseName.Value+"){"+blockCase+"}";
         }
     }
 

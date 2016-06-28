@@ -14,6 +14,7 @@ namespace Mini_Compiler.Sintactico
     class CallFunctionNode : ExpressionNode
     {
         public List<ExpressionNode> List;
+       
         public string Name;
 
 
@@ -56,10 +57,81 @@ namespace Mini_Compiler.Sintactico
             
             
         }
+        public bool isPrimitive(BaseType type)
+        {
+            return type is BooleanType ||
+                   type is IntType ||
+                   type is StringType ||
+                   type is CharType ||
+                   type is RealType;
+
+        }
 
         public override string GenerateCode()
         {
-            throw new NotImplementedException();
+            string parameter = " ";
+
+            var type = SymbolTable.Instance.GetVariable(Name);
+          var function  = (FunctionType)type;
+            List<string> value = new List<string>();
+            string code = " ";
+            
+            
+            int count = 0;
+            // var function = (FunctionType) type;
+            
+            if (this.Name == "getformdata")
+            {
+                return "request.getParameter(" + this.List[0].GenerateCode() + ");";
+            }
+            else
+            {
+                foreach (var expressionNode in List)
+                {
+                    if (function._parameter[0].IsVar)
+                    {
+                        if (count == 0)
+                        {
+
+                            parameter = parameter + expressionNode.GenerateCode();
+                            count++;
+                        }
+                        else
+                        {
+                            count++;
+                            parameter = parameter + "," + expressionNode.GenerateCode();
+                        }
+                    }
+                    else
+                    {
+                        if (function._parameter[count].Type is ArrayType)
+                        {
+                            parameter = parameter + "," +"("+ expressionNode.GenerateCode()+")"+"."+"clone()";
+                            count++;
+                        }
+                       else if (function._parameter[count].Type is RecordType)
+                       {
+                           var record = (RecordType) type;
+                           parameter = parameter + "," + "new " + record.name + "(" + expressionNode.GenerateCode() +
+                                       ");";
+
+                           count++;
+
+
+                       }
+                       else
+                       {
+                            count++;
+                            parameter = parameter + "," + expressionNode.GenerateCode();
+                        }
+
+                    }
+                }
+
+
+                return  this.Name+"("+parameter+")\n";
+
+            }
         }
     }
 }

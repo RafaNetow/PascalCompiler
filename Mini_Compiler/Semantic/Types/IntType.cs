@@ -12,5 +12,10 @@ namespace Mini_Compiler.Semantic.Types
         {
             return otherType is IntType;
         }
+
+        public override string GenerateCode()
+        {
+            return "int";
+        }
     }
 }

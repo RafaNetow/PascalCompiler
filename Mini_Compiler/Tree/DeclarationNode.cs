@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.Remoting.Metadata.W3cXsd2001;
+using Mini_Compiler.Generate_Java;
 using Mini_Compiler.Semantic;
 using Mini_Compiler.Semantic.Types;
 using Mini_Compiler.Sintactico;
@@ -15,10 +16,13 @@ namespace Mini_Compiler.Tree
         public ExpressionNode ExpressionType;
         public bool Expression;
 
+        public PascalToJava convert = new PascalToJava();
 
+         
 
         public bool isPrimitive(BaseType type)
         {
+           
             return type is IntType ||
                    type is BooleanType ||
                    type is CharType ||
@@ -53,7 +57,12 @@ namespace Mini_Compiler.Tree
        
         public override void ValidateSemantic()
         {
-            var typeId = TypesTable.Instance.GetType(TypeId.Value);
+            BaseType typeId;
+            
+
+
+                 typeId = TypesTable.Instance.GetType(TypeId.Value);
+            
             if (Expression)
             {
                 var name = LIstIdNode[0];
@@ -87,6 +96,8 @@ namespace Mini_Compiler.Tree
         {
             string type = "";
              type = TypeId.Value;
+            if (convert.convertToJava.ContainsKey(type))
+                type = convert.convertToJava[type];
             string variables = "";
             int count = 0;
             if (Expression)
@@ -94,7 +105,7 @@ namespace Mini_Compiler.Tree
                 
 
 
-                return type + " " + this.LIstIdNode[0] + "=" + ExpressionType.GenerateCode() + ";";
+                return type + " " + this.LIstIdNode[0].Value + "=" + ExpressionType.GenerateCode() + ";";
 
             }
             else

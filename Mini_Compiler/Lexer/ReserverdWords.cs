@@ -105,6 +105,7 @@ namespace Mini_Compiler.Lexer
             reserverdWords.Add("var", TokenTypes.RwVar);
             reserverdWords.Add("repeat",TokenTypes.RwRepeat);
             reserverdWords.Add("array", TokenTypes.RwArray);
+            reserverdWords.Add("exit", TokenTypes.RwExit);
             reserverdWords.Add("const", TokenTypes.RwConst);
             reserverdWords.Add("struct", TokenTypes.RwStruct);
             reserverdWords.Add("true", TokenTypes.RwTrue);

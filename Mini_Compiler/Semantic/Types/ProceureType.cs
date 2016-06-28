@@ -10,6 +10,12 @@ namespace Mini_Compiler.Tree
         {
             return false;
         }
+
+        public override string GenerateCode()
+        {
+            throw new System.NotImplementedException();
+        }
+
         public List<ParameterFunction> _parameter;
         public ProceureType(List<ParameterFunction> parameter)
         {

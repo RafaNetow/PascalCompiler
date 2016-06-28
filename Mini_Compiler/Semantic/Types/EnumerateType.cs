@@ -16,7 +16,10 @@ namespace Mini_Compiler.Semantic.Types
             return false;
         }
 
-        
+        public override string GenerateCode()
+        {
+            throw new NotImplementedException();
+        }
     }
 
 
