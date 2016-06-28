@@ -147,13 +147,16 @@ namespace Mini_Compiler.Tree
 
                 }
               var  typeId = TypesTable.Instance.GetType(TypeId.Value);
+                typeId.GenerateCode();
                 if (typeId is RecordType)
                 {
                     return type + " " + variables + " " + "=" + "new " + type + "();";
                 }
                 if (typeId is ArrayType)
                 {
+                    
                     var typeArray = (ArrayType) typeId;
+                    
                   var primitiveType =   getType(typeArray);
                     return primitiveType.GenerateCode() + "[]" + variables+ "="+ type+";";
                 }
@@ -161,6 +164,31 @@ namespace Mini_Compiler.Tree
 
             }
             
+        }
+        public List<string> GetDimensione(ArrayType type)
+        {
+
+            List<string> dimensions = new List<string>();
+
+            while (true)
+            {
+
+                dimensions.Add(type.Dimension.Super.GenerateCode());
+                if (isPrimitive(type.Type) || type.Type is RecordType)
+                {
+                    return dimensions;
+
+                }
+
+
+
+
+                type = (ArrayType)type.Type;
+
+            }
+
+
+
         }
     }
 }

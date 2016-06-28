@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Mini_Compiler.Semantic.Types;
+using Mini_Compiler.Sintactico;
 using Mini_Compiler.Tree;
 
 namespace Mini_Compiler.Semantic

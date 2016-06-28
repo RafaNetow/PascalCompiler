@@ -161,7 +161,42 @@ namespace Mini_Compiler.Semantic
 
         public override string GenerateCode()
         {
-            throw new NotImplementedException();
+            BaseType type = getType((ArrayType)this.Type);
+            return type.GenerateCode();
+
+        }
+        public BaseType getType(ArrayType type)
+        {
+            BaseType dimensions;
+
+            while (true)
+            {
+
+
+                if (isPrimitive(type.Type) || type.Type is RecordType)
+                {
+                    return dimensions = type.Type;
+
+                }
+
+
+
+
+                type = (ArrayType)type.Type;
+
+            }
+
+        }
+
+        public bool isPrimitive(BaseType type)
+        {
+            return type is BooleanType ||
+                   type is IntType ||
+                   type is StringType ||
+                   type is CharType ||
+                   type is RealType;
+
         }
     }
+
 }
