@@ -964,6 +964,7 @@ namespace Mini_Compiler.Sintactico
             {
              
                 IndexingAndAccess(accesList);
+                accesList.Reverse();
                 Id.Accesors = accesList;
             }
 
@@ -1785,6 +1786,7 @@ namespace Mini_Compiler.Sintactico
                 {
                     var listAccesor = new List<AccesorNode>();
                     var alist = IndexingAndAccess(listAccesor);
+                    alist.Reverse();
                     return new IdNode
                     {
                         Value = id,

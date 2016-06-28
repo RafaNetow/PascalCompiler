@@ -23,7 +23,14 @@ namespace Mini_Compiler.Tree
 
         public override string GeneratedCodeAttribute()
         {
-            
+            if (TypesTable.Instance.Contains(IdNode.Value))
+            {
+                var idNodeType = IdNode.ValidateSemantic();
+                if (idNodeType is RecordType)
+                {
+                    return "." + IdNode.Value + "xyz";
+                }
+            }
             return "." + IdNode.Value;
 
         }
