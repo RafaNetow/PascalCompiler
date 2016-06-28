@@ -13,7 +13,7 @@ namespace Mini_Compiler.Semantic.Types
         public List<RecordProperties> RecordProperties = new List<RecordProperties>();
         public override bool IsAssignable(BaseType otherType)
         {
-            return false;
+            return otherType is RecordType;
         }
 
         public override string GenerateCode()

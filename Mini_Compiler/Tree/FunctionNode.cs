@@ -21,14 +21,11 @@ namespace Mini_Compiler.Tree
         {
 
             List<ParameterFunction> listParams = new List<ParameterFunction>();
-            var functValue =   TypesTable.Instance.GetType(TypeOfReturn.Value);
+   
 
-            BaseType VariableToReturn = ReturParameter.ValidateSemantic();
-            var Return = TypesTable.Instance.GetType(TypeOfReturn.Value);
-            if (VariableToReturn != Return)
-            {
-                throw  new Exception("The return parameter is wrong");
-            }
+         
+        
+            
 
             foreach (var param in Params)
             {
@@ -37,18 +34,29 @@ namespace Mini_Compiler.Tree
                 {
                     var temp = TypesTable.Instance.GetType(param.TypeV.Value);
                     listParams.Add(new ParameterFunction { IsVar = param.IsDeclaretionVar, Type = temp });
+                    SymbolTable.Instance.DeclareVariable(parameterFunction.Value,temp);
                 }
                 
             }
+           
 
-            SymbolTable.Instance.DeclareVariable(NameOfFunction.Value,new FunctionType(listParams,functValue));
+
+
 
             foreach (var sentencesNode in BlockFunction)
             {
                 sentencesNode.ValidateSemantic();
             }
-             
-        
+            var Return = TypesTable.Instance.GetType(TypeOfReturn.Value);
+            BaseType VariableToReturn = ReturParameter.ValidateSemantic();
+            if (VariableToReturn != Return)
+            {
+                throw new Exception("The return parameter is wrong");
+            }
+            var functValue = TypesTable.Instance.GetType(TypeOfReturn.Value);
+            SymbolTable.Instance.DeclareVariable(NameOfFunction.Value, new FunctionType(listParams, functValue));
+
+
         }
 
         public override string GenerateCode()

@@ -131,7 +131,7 @@ namespace Mini_Compiler.Tree
             else
             {
 
-                return Variable.Value + " " + "=" + ExpressionAssigned.GenerateCode() + ";\n";
+                return Variable.GenerateCode() + " " + "=" + ExpressionAssigned.GenerateCode() + ";\n";
             }
         }
     }

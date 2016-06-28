@@ -92,6 +92,28 @@ namespace Mini_Compiler.Tree
             }
         }
 
+        public BaseType getType(ArrayType typ)
+        {
+            BaseType dimensions;
+
+            while (true)
+            {
+
+
+                if (isPrimitive(typ.Type))
+                {
+                    return dimensions = typ.Type;
+
+                }
+
+
+
+
+                typ = (ArrayType) typ.Type;
+
+            }
+        }
+
         public override string GenerateCode()
         {
             string type = "";
@@ -123,6 +145,17 @@ namespace Mini_Compiler.Tree
                     }
 
 
+                }
+              var  typeId = TypesTable.Instance.GetType(TypeId.Value);
+                if (typeId is RecordType)
+                {
+                    return type + " " + variables + " " + "=" + "new " + type + "();";
+                }
+                if (typeId is ArrayType)
+                {
+                    var typeArray = (ArrayType) typeId;
+                  var primitiveType =   getType(typeArray);
+                    return primitiveType.GenerateCode() + "[]" + variables+ "="+ type+";";
                 }
                 return type + " " + variables + ";";
 
