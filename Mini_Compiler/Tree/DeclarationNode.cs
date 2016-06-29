@@ -74,9 +74,10 @@ namespace Mini_Compiler.Tree
 
                 var typeOfExpression = ExpressionType.ValidateSemantic();
 
-
+                var type =typeOfExpression.GenerateCode();
+                var IdType = typeId.GenerateCode();
                 
-                if (typeId != getPrimType(typeOfExpression))
+                if (IdType != type)
                 {
                     throw new Exception("Parameter dnt equals");
                 }
@@ -100,7 +101,7 @@ namespace Mini_Compiler.Tree
             {
 
 
-                if (isPrimitive(typ.Type))
+                if (isPrimitive(typ.Type  ) || typ.Type is RecordType )
                 {
                     return dimensions = typ.Type;
 
@@ -117,14 +118,14 @@ namespace Mini_Compiler.Tree
         public override string GenerateCode()
         {
             string type = "";
-             type = TypeId.Value;
+            type = TypeId.Value;
             if (convert.convertToJava.ContainsKey(type))
                 type = convert.convertToJava[type];
             string variables = "";
             int count = 0;
             if (Expression)
             {
-                
+
 
 
                 return type + " " + this.LIstIdNode[0].Value + "=" + ExpressionType.GenerateCode() + ";";
@@ -134,37 +135,41 @@ namespace Mini_Compiler.Tree
             {
                 foreach (var idNode in LIstIdNode)
                 {
-                    if (count == 0) { 
+                    if (count == 0)
+                    {
                         variables = idNode.Value;
                         count++;
                     }
                     else
                     {
-                        variables = variables+"," + idNode.Value;
-                        
+                        variables = variables + "," + idNode.Value;
+
                     }
 
 
+
+                    var typeId = TypesTable.Instance.GetType(TypeId.Value);
+                   
+                    if (typeId is RecordType)
+                    {
+                        return type + " " + variables + " " + "=" + "new " + type + "();";
+                    }
+                    if (typeId is ArrayType)
+                    {
+
+                        var typeArray = (ArrayType) typeId;
+
+                        var primitiveType = getType(typeArray);
+                        return primitiveType.GenerateCode() + "[]" + variables + "=" + type + ";";
+                    }
+                    return type + " " + variables + ";";
+
                 }
-              var  typeId = TypesTable.Instance.GetType(TypeId.Value);
-                typeId.GenerateCode();
-                if (typeId is RecordType)
-                {
-                    return type + " " + variables + " " + "=" + "new " + type + "();";
-                }
-                if (typeId is ArrayType)
-                {
-                    
-                    var typeArray = (ArrayType) typeId;
-                    
-                  var primitiveType =   getType(typeArray);
-                    return primitiveType.GenerateCode() + "[]" + variables+ "="+ type+";";
-                }
-                return type + " " + variables + ";";
 
             }
-            
+            return "";
         }
+
         public List<string> GetDimensione(ArrayType type)
         {
 

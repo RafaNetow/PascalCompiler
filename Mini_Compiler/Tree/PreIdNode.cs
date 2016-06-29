@@ -17,88 +17,90 @@ namespace Mini_Compiler.Tree
 
         public override void ValidateSemantic()
         {
-            if (IsAProcedure)
+            if (Variable.Value != "writeln")
             {
-
-                var type = SymbolTable.Instance.GetVariable(Variable.Value);
-                int count = 0;
-
-
-                if (type is ProceureType)
+                if (IsAProcedure)
                 {
 
-                    var function = (ProceureType) type;
+                    var type = SymbolTable.Instance.GetVariable(Variable.Value);
+                    int count = 0;
 
-                    if (function._parameter.Count != ListExpressionNodes.Count)
-                    {
-                        throw new Exception("Cant of function is wrong");
-                    }
 
-                    foreach (var expressionNode in ListExpressionNodes)
+                    if (type is ProceureType)
                     {
 
-                        if (!expressionNode.ValidateSemantic().IsAssignable(function._parameter[count].Type))
+                        var function = (ProceureType) type;
+
+                        if (function._parameter.Count != ListExpressionNodes.Count)
                         {
-                            throw new Exception("Parameter Type is wrong");
+                            throw new Exception("Cant of function is wrong");
                         }
-                        count++;
-                    }
+
+                        foreach (var expressionNode in ListExpressionNodes)
+                        {
+
+                            if (!expressionNode.ValidateSemantic().IsAssignable(function._parameter[count].Type))
+                            {
+                                throw new Exception("Parameter Type is wrong");
+                            }
+                            count++;
+                        }
 
 
-                }
-                else
-                {
-                    throw new Exception("Is not a procedure");
-                }
-
-            }
-            else
-            {
-
-
-                var typeVariable = SymbolTable.Instance.GetVariable(Variable.Value);
-                var typeOfAssigned = ExpressionAssigned.ValidateSemantic();
-                if (typeVariable is EnumerateType)
-                {
-                    var typeToAssign = ExpressionAssigned.ValidateSemantic();
-                    if (typeToAssign is EnumParam)
-                    {
-                        var castTypeToAssign = (EnumParam)typeToAssign;
-                       var castTypeVariable = (EnumerateType) typeVariable;
-
-                        if(!castTypeVariable.ListOfParams.Contains(castTypeToAssign.Name))
-                            throw  new SemanticException(" No se puede asignar el valor al enum");
                     }
                     else
                     {
-                        throw new SemanticException("el tipo de asignacion no esta permita");
+                        throw new Exception("Is not a procedure");
                     }
 
-
-                }
-
-               
-                else if (typeOfAssigned is ConstType)
-                {
-                    throw new SemanticException("no se puede asignar a una constante.");
                 }
                 else
                 {
 
-                     typeOfAssigned = ExpressionAssigned.ValidateSemantic();
-                    var valueType = ListExpressionNodes[0].ValidateSemantic();
-                    if (!typeOfAssigned.IsAssignable(valueType))
+
+                    var typeVariable = SymbolTable.Instance.GetVariable(Variable.Value);
+                    var typeOfAssigned = ExpressionAssigned.ValidateSemantic();
+                    if (typeVariable is EnumerateType)
                     {
-                        throw new SemanticException("Tipos incompatibles entre si.");
+                        var typeToAssign = ExpressionAssigned.ValidateSemantic();
+                        if (typeToAssign is EnumParam)
+                        {
+                            var castTypeToAssign = (EnumParam) typeToAssign;
+                            var castTypeVariable = (EnumerateType) typeVariable;
+
+                            if (!castTypeVariable.ListOfParams.Contains(castTypeToAssign.Name))
+                                throw new SemanticException(" No se puede asignar el valor al enum");
+                        }
+                        else
+                        {
+                            throw new SemanticException("el tipo de asignacion no esta permita");
+                        }
+
+
                     }
+
+
+                    else if (typeOfAssigned is ConstType)
+                    {
+                        throw new SemanticException("no se puede asignar a una constante.");
+                    }
+                    else
+                    {
+
+                        typeOfAssigned = ExpressionAssigned.ValidateSemantic();
+                        var valueType = ListExpressionNodes[0].ValidateSemantic();
+                        if (!typeOfAssigned.IsAssignable(valueType))
+                        {
+                            throw new SemanticException("Tipos incompatibles entre si.");
+                        }
+
+                    }
+
 
                 }
 
 
             }
-            
-
-            
         }
 
         public override string GenerateCode()

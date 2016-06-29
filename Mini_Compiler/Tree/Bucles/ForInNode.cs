@@ -20,7 +20,16 @@ namespace Mini_Compiler.Tree
 
         public override string GenerateCode()
         {
-            throw new System.NotImplementedException();
+          var type =  FirstId.ValidateSemantic();
+            string blockForIn = " ";
+            foreach (var sentencesNode in ListSentences)
+            {
+                blockForIn = blockForIn + sentencesNode.GenerateCode();
+            }
+
+            var stringFor = "for (" + type.GenerateCode() + " " + FirstId.Value + " :" + " "+SecondId.Value+")";
+            return stringFor + "{" + blockForIn + "}\n";
+
         }
     }
 }

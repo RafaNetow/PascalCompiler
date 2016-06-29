@@ -24,8 +24,9 @@ namespace Mini_Compiler.Semantic
             _table.Add("boolean",new BooleanType());
             _table.Add("Boolean", new BooleanType());
             _table.Add("Const", new ConstType());
+            _table.Add("record", new RecordType());
             //_table.Add("function", new FunctionType());
-            
+
         }
 
 

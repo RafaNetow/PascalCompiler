@@ -25,6 +25,8 @@ namespace Mini_Compiler.Tree
                 {
                     var temp = TypesTable.Instance.GetType(param.TypeV.Value);
                     listParams.Add(new ParameterFunction { IsVar = param.IsDeclaretionVar, Type = temp });
+                    SymbolTable.Instance.DeclareVariable(param.TypeV.Value, temp);
+
                 }
 
             }

@@ -161,8 +161,9 @@ namespace Mini_Compiler.Semantic
 
         public override string GenerateCode()
         {
-            BaseType type = getType((ArrayType)this.Type);
-            return type.GenerateCode();
+
+
+            return Type.GenerateCode();
 
         }
         public BaseType getType(ArrayType type)

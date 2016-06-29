@@ -2254,7 +2254,16 @@ namespace Mini_Compiler.Sintactico
                         new Tuple<BaseType, BaseType>(TypesTable.Instance.GetType("string"),
                             TypesTable.Instance.GetType("integer")),
                         TypesTable.Instance.GetType("string")
-                    },
+                    }, { 
+                     new Tuple<BaseType, BaseType>(TypesTable.Instance.GetType("record"),
+                            TypesTable.Instance.GetType("string")),
+                        TypesTable.Instance.GetType("string")
+              },
+                     {
+                     new Tuple<BaseType, BaseType>(TypesTable.Instance.GetType("string"),
+                            TypesTable.Instance.GetType("record")),
+                        TypesTable.Instance.GetType("string")
+              },
 
 
 
